@@ -1,6 +1,8 @@
 using System;
 using System.IO;
 using System.Reflection;
+using Autofac;
+using AutoMapper;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Controllers;
@@ -24,7 +26,6 @@ namespace KFU.CinemaOnline.API
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
@@ -37,6 +38,17 @@ namespace KFU.CinemaOnline.API
                     Title = "KFU CinemaOnline API",
                 });
             });
+
+
+        }
+
+        public void ConfigureContainer(ContainerBuilder builder)
+        {
+            //builder.RegisterModule<DataAccessDependencyModule>();
+
+            builder.RegisterModule<MapperDependencyModule>();
+
+            //builder.RegisterModule<CoreDependencyModule>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
