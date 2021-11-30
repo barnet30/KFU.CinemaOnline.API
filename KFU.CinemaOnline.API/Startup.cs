@@ -1,16 +1,14 @@
 using System;
-using System.IO;
-using System.Reflection;
 using Autofac;
-using AutoMapper;
+using KFU.CinemaOnline.DAL.Identity;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerUI;
+using Microsoft.EntityFrameworkCore;
 
 namespace KFU.CinemaOnline.API
 {
@@ -38,7 +36,9 @@ namespace KFU.CinemaOnline.API
                     Title = "KFU CinemaOnline API",
                 });
             });
-
+            services.AddMvc();
+            services.AddDbContextPool<IdentityDbContext>(x =>
+                x.UseNpgsql(Configuration.GetConnectionString("IdentityConnectionString")));
 
         }
 

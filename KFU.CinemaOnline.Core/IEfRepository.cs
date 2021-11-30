@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
-using KFU.CinemaOnline.DAL.Entities;
 
-namespace KFU.CinemaOnline.DAL.Interfaces
+namespace KFU.CinemaOnline.Core
 {
     public interface IEfRepository<T> where T : BaseEntity
     {

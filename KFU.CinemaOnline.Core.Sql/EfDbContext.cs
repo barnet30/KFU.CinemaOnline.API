@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
-namespace KFU.CinemaOnline.DAL.Context
+namespace KFU.CinemaOnline.Core.Sql
 {
     public abstract class EfDbContext : DbContext
     {

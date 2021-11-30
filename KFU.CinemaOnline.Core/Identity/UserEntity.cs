@@ -1,9 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
-namespace KFU.CinemaOnline.DAL.Entities.Identity
+namespace KFU.CinemaOnline.Core.Identity
 {
-    public class User : BaseEntity
+    public class UserEntity : BaseEntity
     {
         [Required] public string Username { get; set; }
         [JsonIgnore] public string Password { get; set; }

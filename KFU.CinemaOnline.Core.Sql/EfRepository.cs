@@ -1,13 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using KFU.CinemaOnline.DAL.Context;
-using KFU.CinemaOnline.DAL.Entities;
-using KFU.CinemaOnline.DAL.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
-namespace KFU.CinemaOnline.DAL.Repositories
+namespace KFU.CinemaOnline.Core.Sql
 {
     public class EfRepository<T> : IEfRepository<T> where T: BaseEntity
     {
