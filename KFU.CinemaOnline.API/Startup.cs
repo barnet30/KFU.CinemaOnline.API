@@ -1,16 +1,14 @@
+using System;
+using Autofac;
+using KFU.CinemaOnline.DAL.Identity;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using Swashbuckle.AspNetCore.SwaggerUI;
+using Microsoft.EntityFrameworkCore;
 
 namespace KFU.CinemaOnline.API
 {
@@ -26,29 +24,56 @@ namespace KFU.CinemaOnline.API
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "KFU.CinemaOnline.API", Version = "v1" });
+                var assemblyVersion = new Version("1.0");
+                c.CustomSchemaIds(type => type.ToString());
+                c.CustomOperationIds(d => (d.ActionDescriptor as ControllerActionDescriptor)?.ActionName);
+                c.SwaggerDoc($"v{assemblyVersion}", new OpenApiInfo
+                {
+                    Version = $"v{assemblyVersion}",
+                    Title = "KFU CinemaOnline API",
+                });
             });
+            services.AddMvc();
+            services.AddDbContextPool<IdentityDbContext>(x =>
+                x.UseNpgsql(Configuration.GetConnectionString("IdentityConnectionString")));
+
+        }
+
+        public void ConfigureContainer(ContainerBuilder builder)
+        {
+            //builder.RegisterModule<DataAccessDependencyModule>();
+
+            builder.RegisterModule<MapperDependencyModule>();
+
+            //builder.RegisterModule<CoreDependencyModule>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            if (env.IsDevelopment())
+            app.UseStatusCodePages();
+
+            app.UseSwagger(c => { c.SerializeAsV2 = true; });
+
+            app.UseSwaggerUI(c =>
             {
-                app.UseDeveloperExceptionPage();
-                app.UseSwagger();
-                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "KFU.CinemaOnline.API v1"));
-            }
+                var assemblyVersion = new Version("1.0");
+                const string apiName = "KFU CinemaOnline";
+                c.SwaggerEndpoint($"/swagger/v{assemblyVersion}/swagger.json", $"{apiName} API V{assemblyVersion}");
+                c.RoutePrefix = string.Empty;
+                c.DocumentTitle = $"{apiName} Documentation";
+                c.DocExpansion(DocExpansion.None);
+            });
 
             app.UseHttpsRedirection();
 
             app.UseRouting();
 
             app.UseAuthorization();
+            app.UseAuthentication();
 
             app.UseEndpoints(endpoints =>
             {
