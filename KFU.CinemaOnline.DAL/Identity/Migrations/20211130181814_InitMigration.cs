@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace KFU.CinemaOnline.DAL.Migrations.Identity
+namespace KFU.CinemaOnline.DAL.Identity.Migrations
 {
     public partial class InitMigration : Migration
     {

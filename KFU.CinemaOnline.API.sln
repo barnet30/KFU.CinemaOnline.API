@@ -11,15 +11,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KFU.CinemaOnline.API.UnitTe
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KFU.CinemaOnline.BL", "KFU.CinemaOnline.BL\KFU.CinemaOnline.BL.csproj", "{B8679512-EBC1-416A-B3D4-A9AE0447EED3}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KFU.CinemaOnline.BL.Contracts", "KFU.CinemaOnline.BL.Contracts\KFU.CinemaOnline.BL.Contracts.csproj", "{A385EABC-FBA5-4BBC-B0EF-6B36C09CE5B5}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KFU.CinemaOnline.BL.UnitTests", "KFU.CinemaOnline.BL.UnitTests\KFU.CinemaOnline.BL.UnitTests.csproj", "{E6DB7758-23D2-4926-A79B-BD8FBCDF9070}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KFU.CinemaOnline.DAL", "KFU.CinemaOnline.DAL\KFU.CinemaOnline.DAL.csproj", "{7CE9D869-9B12-45FF-B566-A2A3531F0C35}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KFU.CinemaOnline.Core", "KFU.CinemaOnline.Core\KFU.CinemaOnline.Core.csproj", "{8C28D67F-1590-4E09-AEFE-77FC702C57DC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KFU.CinemaOnline.Core", "KFU.CinemaOnline.Core\KFU.CinemaOnline.Core.csproj", "{8C28D67F-1590-4E09-AEFE-77FC702C57DC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KFU.CinemaOnline.Core.Sql", "KFU.CinemaOnline.Core.Sql\KFU.CinemaOnline.Core.Sql.csproj", "{41F55783-138D-48E2-AF4F-22B6A8041151}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KFU.CinemaOnline.Core.Sql", "KFU.CinemaOnline.Core.Sql\KFU.CinemaOnline.Core.Sql.csproj", "{41F55783-138D-48E2-AF4F-22B6A8041151}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -43,10 +41,6 @@ Global
 		{B8679512-EBC1-416A-B3D4-A9AE0447EED3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B8679512-EBC1-416A-B3D4-A9AE0447EED3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B8679512-EBC1-416A-B3D4-A9AE0447EED3}.Release|Any CPU.Build.0 = Release|Any CPU
-		{A385EABC-FBA5-4BBC-B0EF-6B36C09CE5B5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{A385EABC-FBA5-4BBC-B0EF-6B36C09CE5B5}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A385EABC-FBA5-4BBC-B0EF-6B36C09CE5B5}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{A385EABC-FBA5-4BBC-B0EF-6B36C09CE5B5}.Release|Any CPU.Build.0 = Release|Any CPU
 		{E6DB7758-23D2-4926-A79B-BD8FBCDF9070}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{E6DB7758-23D2-4926-A79B-BD8FBCDF9070}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E6DB7758-23D2-4926-A79B-BD8FBCDF9070}.Release|Any CPU.ActiveCfg = Release|Any CPU

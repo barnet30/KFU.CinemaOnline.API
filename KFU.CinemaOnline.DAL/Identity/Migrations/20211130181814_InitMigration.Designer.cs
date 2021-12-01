@@ -7,10 +7,10 @@ using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
-namespace KFU.CinemaOnline.DAL.Migrations.Identity
+namespace KFU.CinemaOnline.DAL.Identity.Migrations
 {
     [DbContext(typeof(IdentityDbContext))]
-    [Migration("20211130162624_InitMigration")]
+    [Migration("20211130181814_InitMigration")]
     partial class InitMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

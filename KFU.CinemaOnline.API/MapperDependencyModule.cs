@@ -1,6 +1,6 @@
-﻿using System.Collections.Generic;
-using Autofac;
+﻿using Autofac;
 using AutoMapper;
+using KFU.CinemaOnline.BL;
 
 namespace KFU.CinemaOnline.API
 {
@@ -11,6 +11,7 @@ namespace KFU.CinemaOnline.API
             builder.Register(c => new MapperConfiguration(cfg =>
             {
                 cfg.AddProfile<DtoMapperProfile>();
+                cfg.AddProfile<BlMapperProfile>();
             })).AsSelf().SingleInstance();
         }
     }
