@@ -1,6 +1,7 @@
 using System;
 using Autofac;
-using KFU.CinemaOnline.DAL.Identity;
+using KFU.CinemaOnline.Common;
+using KFU.CinemaOnline.DAL.Account;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Controllers;
@@ -14,6 +15,7 @@ namespace KFU.CinemaOnline.API
 {
     public class Startup
     {
+        
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -25,6 +27,8 @@ namespace KFU.CinemaOnline.API
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
+            services.Configure<AuthOptions>(Configuration.GetSection("Auth"));
+
             services.AddSwaggerGen(c =>
             {
                 var assemblyVersion = new Version("1.0");
@@ -37,8 +41,8 @@ namespace KFU.CinemaOnline.API
                 });
             });
             services.AddMvc();
-            services.AddDbContextPool<IdentityDbContext>(x =>
-                x.UseNpgsql(Configuration.GetConnectionString("IdentityConnectionString")));
+            services.AddDbContextPool<AccountDbContext>(x =>
+                x.UseNpgsql(Configuration.GetConnectionString("AccountConnectionString")));
 
         }
 

@@ -18,12 +18,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Controllers\" />
-    <Folder Include="Controllers\" />
-  </ItemGroup>
-
-  <ItemGroup>
+    <ProjectReference Include="..\KFU.CinemaOnline.API.Contracts\KFU.CinemaOnline.API.Contracts.csproj" />
     <ProjectReference Include="..\KFU.CinemaOnline.BL\KFU.CinemaOnline.BL.csproj" />
+    <ProjectReference Include="..\KFU.CinemaOnline.Common\KFU.CinemaOnline.Common.csproj" />
     <ProjectReference Include="..\KFU.CinemaOnline.DAL\KFU.CinemaOnline.DAL.csproj" />
   </ItemGroup>
 
