@@ -2,6 +2,7 @@
 
 namespace KFU.CinemaOnline.BL
 {
+    
     public class AccountService : IAccountService
     {
         private readonly IAccountRepository _accountRepository;
@@ -11,9 +12,19 @@ namespace KFU.CinemaOnline.BL
             _accountRepository = accountRepository;
         }
 
-        public AccountEntity AuthenticateUser(string username, string password)
+        public AccountEntity GetByUsernameAndPassword(string username, string password)
         {
             return _accountRepository.GetByUsernameAndPassword(username, password);
+        }
+
+        public AccountEntity GetByUsername(string username)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public AccountEntity GetByEmail(string email)
+        {
+            throw new System.NotImplementedException();
         }
     }
 }

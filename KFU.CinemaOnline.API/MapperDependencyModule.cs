@@ -10,7 +10,7 @@ namespace KFU.CinemaOnline.API
         {
             builder.Register(c => new MapperConfiguration(cfg =>
             {
-                cfg.AddProfile<DtoMapperProfile>();
+                cfg.AddProfile<ApiMapperProfile>();
                 cfg.AddProfile<BlMapperProfile>();
             })).AsSelf().SingleInstance();
         }
