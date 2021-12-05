@@ -7,6 +7,7 @@ using KFU.CinemaOnline.BL;
 using KFU.CinemaOnline.Common;
 using KFU.CinemaOnline.DAL;
 using KFU.CinemaOnline.DAL.Account;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Hosting;
@@ -41,8 +42,39 @@ namespace KFU.CinemaOnline.API
                 cfg.AddProfile(typeof(BlMapperProfile));
             });
             services.AddControllers();
-            services.Configure<AuthOptions>(Configuration.GetSection("Auth"));
 
+            services.Configure<AuthOptions>(Configuration.GetSection("Auth"));
+            
+            var authOptions = Configuration.GetSection("Auth").Get<AuthOptions>();
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddJwtBearer(options =>
+                {
+                    options.RequireHttpsMetadata = false;
+                    options.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
+                    {
+                        ValidateIssuer = true,
+                        ValidIssuer = authOptions.Issuer,
+
+                        ValidateAudience = true,
+                        ValidAudience = authOptions.Audience,
+
+                        ValidateLifetime = true,
+
+                        IssuerSigningKey = authOptions.GetSymmetricSecurityKey(),
+                        ValidateIssuerSigningKey = true
+                    };
+                });
+                
+            services.AddCors(options =>
+            {
+                options.AddDefaultPolicy(
+                    builder =>
+                    {
+                        builder.AllowAnyOrigin()
+                            .AllowAnyMethod()
+                            .AllowAnyHeader();
+                    });
+            });
             services.AddSwaggerGen(c =>
             {
                 var assemblyVersion = new Version("1.0");
@@ -95,9 +127,10 @@ namespace KFU.CinemaOnline.API
             app.UseHttpsRedirection();
 
             app.UseRouting();
-
-            app.UseAuthorization();
+            app.UseCors();
+            
             app.UseAuthentication();
+            app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {
