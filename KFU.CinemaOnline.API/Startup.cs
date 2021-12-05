@@ -52,7 +52,7 @@ namespace KFU.CinemaOnline.API
 
             builder.RegisterModule<MapperDependencyModule>();
 
-            //builder.RegisterModule<CoreDependencyModule>();
+            //builder.RegisterModule<BusinessLogicDependencyModule>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
