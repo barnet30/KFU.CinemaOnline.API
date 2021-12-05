@@ -1,4 +1,6 @@
-﻿using KFU.CinemaOnline.Core.Account;
+﻿using System.Threading.Tasks;
+using KFU.CinemaOnline.Core;
+using KFU.CinemaOnline.Core.Account;
 
 namespace KFU.CinemaOnline.BL
 {
@@ -19,12 +21,18 @@ namespace KFU.CinemaOnline.BL
 
         public AccountEntity GetByUsername(string username)
         {
-            throw new System.NotImplementedException();
+            return _accountRepository.GetByUsername(username);
         }
 
         public AccountEntity GetByEmail(string email)
         {
-            throw new System.NotImplementedException();
+            return _accountRepository.GetByEmail(email);
+        }
+
+        public async Task<AccountEntity> AddNewUser(AccountEntity account)
+        {
+            account.Roles = new[] { Role.User };
+            return await _accountRepository.CreateAsync(account);
         }
     }
 }

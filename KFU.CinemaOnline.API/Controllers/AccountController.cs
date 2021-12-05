@@ -4,6 +4,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Net;
 using System.Security.Claims;
+using System.Threading.Tasks;
 using AutoMapper;
 using KFU.CinemaOnline.API.Contracts.Account;
 using KFU.CinemaOnline.Common;
@@ -29,7 +30,7 @@ namespace KFU.CinemaOnline.API.Controllers
         }
 
         [HttpPost("login")]
-        public IActionResult Login([FromBody] Login request)
+        public IActionResult Login([FromBody] LoginRequest request)
         {
             var user = _accountService.GetByUsernameAndPassword(request.Username, request.Password);
 
@@ -39,14 +40,34 @@ namespace KFU.CinemaOnline.API.Controllers
             }
 
             var token = GenerateJwt(_mapper.Map<Account>(user));
-            return Ok(new { access_token = token });
+            return Ok(new { account = user, access_token = token });
 
         }
 
         [HttpPost("register")]
-        public IActionResult Register([FromBody] Register request)
+        public async Task<IActionResult> Register([FromBody] RegisterRequest request)
         {
-            return Ok();
+            var userExist = _accountService.GetByUsername(request.Username);
+            if (userExist != null)
+            {
+                ErrorResponse.GenerateError(HttpStatusCode.BadRequest, $"User with username {request.Username} already exists");
+            }
+
+            userExist = _accountService.GetByEmail(request.Email);
+            if (userExist != null)
+            {
+                ErrorResponse.GenerateError(HttpStatusCode.BadRequest, $"User with email {request.Email} already exists");
+            }
+
+            var newUser = _mapper.Map<Account>(await _accountService.AddNewUser(_mapper.Map<AccountEntity>(request)));
+
+            if (newUser == null)
+            {
+                ErrorResponse.GenerateError(HttpStatusCode.BadRequest, "bad request");
+            }
+            var token = GenerateJwt(newUser);
+
+            return Ok(new { account = newUser, access_token = token });
         }
 
         private string GenerateJwt(Account account)

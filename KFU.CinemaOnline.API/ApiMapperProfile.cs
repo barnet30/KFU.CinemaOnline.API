@@ -9,6 +9,10 @@ namespace KFU.CinemaOnline.API
         public ApiMapperProfile()
         {
             CreateMap<Account, AccountEntity>().ReverseMap();
+            CreateMap<RegisterRequest, AccountEntity>()
+                .ForMember(dst => dst.Id, opt => opt.Ignore())
+                .ForMember(dst => dst.Roles, opt => opt.Ignore());
+            
         }
     }
 }

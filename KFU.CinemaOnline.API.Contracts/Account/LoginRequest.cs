@@ -2,7 +2,7 @@
 
 namespace KFU.CinemaOnline.API.Contracts.Account
 {
-    public class Login
+    public class LoginRequest
     {
         [Required]
         public string Username { get; set; }
