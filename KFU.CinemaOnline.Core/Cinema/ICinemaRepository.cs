@@ -5,10 +5,10 @@ namespace KFU.CinemaOnline.Core.Cinema
 {
     public interface ICinemaRepository
     {
-        Task<ActorEntity> CreateActorAsync(AccountEntity entity);
-        Task<DirectorEntity> CreateDirectorAsync(DirectorEntity entity);
-        Task<GenreEntity> CreateGenreAsync(GenreEntity entity);
-        Task<MovieEntity> CreateMovieAsync(MovieEntity entity);
+        Task CreateActorAsync(AccountEntity entity);
+        Task CreateDirectorAsync(DirectorEntity entity);
+        Task CreateGenreAsync(GenreEntity entity);
+        Task CreateMovieAsync(MovieEntity entity);
 
     }
 }

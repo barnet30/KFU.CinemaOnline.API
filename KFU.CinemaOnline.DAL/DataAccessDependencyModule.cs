@@ -1,5 +1,6 @@
 ﻿using Autofac;
 using KFU.CinemaOnline.DAL.Account;
+using KFU.CinemaOnline.DAL.Cinema;
 
 namespace KFU.CinemaOnline.DAL
 {
@@ -8,7 +9,8 @@ namespace KFU.CinemaOnline.DAL
         protected override void Load(ContainerBuilder builder)
         {
             builder.RegisterTypes(
-                    typeof(AccountRepository))
+                    typeof(AccountRepository),
+                    typeof(CinemaRepository))
                 .AsImplementedInterfaces()
                 .InstancePerLifetimeScope();
         }
