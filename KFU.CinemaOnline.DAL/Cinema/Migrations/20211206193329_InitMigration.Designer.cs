@@ -10,8 +10,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace KFU.CinemaOnline.DAL.Cinema.Migrations
 {
     [DbContext(typeof(CinemaDbContext))]
-    [Migration("20211206183157_InitialMigration")]
-    partial class InitialMigration
+    [Migration("20211206193329_InitMigration")]
+    partial class InitMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -23,11 +23,11 @@ namespace KFU.CinemaOnline.DAL.Cinema.Migrations
 
             modelBuilder.Entity("ActorEntityMovieEntity", b =>
                 {
-                    b.Property<Guid>("ActorsId")
-                        .HasColumnType("uuid");
+                    b.Property<int>("ActorsId")
+                        .HasColumnType("integer");
 
-                    b.Property<Guid>("MoviesId")
-                        .HasColumnType("uuid");
+                    b.Property<int>("MoviesId")
+                        .HasColumnType("integer");
 
                     b.HasKey("ActorsId", "MoviesId");
 
@@ -38,11 +38,11 @@ namespace KFU.CinemaOnline.DAL.Cinema.Migrations
 
             modelBuilder.Entity("GenreEntityMovieEntity", b =>
                 {
-                    b.Property<Guid>("GenresId")
-                        .HasColumnType("uuid");
+                    b.Property<int>("GenresId")
+                        .HasColumnType("integer");
 
-                    b.Property<Guid>("MoviesId")
-                        .HasColumnType("uuid");
+                    b.Property<int>("MoviesId")
+                        .HasColumnType("integer");
 
                     b.HasKey("GenresId", "MoviesId");
 
@@ -53,9 +53,10 @@ namespace KFU.CinemaOnline.DAL.Cinema.Migrations
 
             modelBuilder.Entity("KFU.CinemaOnline.Core.Cinema.ActorEntity", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("integer")
+                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
                     b.Property<DateTime>("BirthDate")
                         .HasColumnType("timestamp without time zone");
@@ -82,9 +83,10 @@ namespace KFU.CinemaOnline.DAL.Cinema.Migrations
 
             modelBuilder.Entity("KFU.CinemaOnline.Core.Cinema.DirectorEntity", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("integer")
+                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
                     b.Property<DateTime>("BirthDate")
                         .HasColumnType("timestamp without time zone");
@@ -111,9 +113,10 @@ namespace KFU.CinemaOnline.DAL.Cinema.Migrations
 
             modelBuilder.Entity("KFU.CinemaOnline.Core.Cinema.GenreEntity", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("integer")
+                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
                     b.Property<string>("Description")
                         .HasColumnType("text");
@@ -128,9 +131,10 @@ namespace KFU.CinemaOnline.DAL.Cinema.Migrations
 
             modelBuilder.Entity("KFU.CinemaOnline.Core.Cinema.MovieEntity", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("integer")
+                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
                     b.Property<string>("Country")
                         .HasColumnType("text");
@@ -138,8 +142,8 @@ namespace KFU.CinemaOnline.DAL.Cinema.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("text");
 
-                    b.Property<Guid?>("DirectorId")
-                        .HasColumnType("uuid");
+                    b.Property<int?>("DirectorId")
+                        .HasColumnType("integer");
 
                     b.Property<string>("ImageUrl")
                         .HasColumnType("text");

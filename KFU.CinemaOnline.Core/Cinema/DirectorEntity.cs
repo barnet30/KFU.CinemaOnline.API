@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace KFU.CinemaOnline.Core.Cinema
 {
-    public class DirectorEntity : BaseEntity
+    public class DirectorEntity 
     {
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public int Id { get; set; }
         public string Name { get; set; }
         public string LastName { get; set; }
         public string ImageUrl { get; set; }

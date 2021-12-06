@@ -1,9 +1,10 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace KFU.CinemaOnline.DAL.Cinema.Migrations
 {
-    public partial class InitialMigration : Migration
+    public partial class InitMigration : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -11,7 +12,8 @@ namespace KFU.CinemaOnline.DAL.Cinema.Migrations
                 name: "Actors",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Name = table.Column<string>(type: "text", nullable: true),
                     LastName = table.Column<string>(type: "text", nullable: true),
                     ImageUrl = table.Column<string>(type: "text", nullable: true),
@@ -28,7 +30,8 @@ namespace KFU.CinemaOnline.DAL.Cinema.Migrations
                 name: "Directors",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Name = table.Column<string>(type: "text", nullable: true),
                     LastName = table.Column<string>(type: "text", nullable: true),
                     ImageUrl = table.Column<string>(type: "text", nullable: true),
@@ -45,7 +48,8 @@ namespace KFU.CinemaOnline.DAL.Cinema.Migrations
                 name: "Genres",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Name = table.Column<string>(type: "text", nullable: true),
                     Description = table.Column<string>(type: "text", nullable: true)
                 },
@@ -58,14 +62,15 @@ namespace KFU.CinemaOnline.DAL.Cinema.Migrations
                 name: "Movies",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Name = table.Column<string>(type: "text", nullable: true),
                     Country = table.Column<string>(type: "text", nullable: true),
                     Year = table.Column<int>(type: "integer", nullable: false),
                     Description = table.Column<string>(type: "text", nullable: true),
                     MovieUrl = table.Column<string>(type: "text", nullable: true),
                     ImageUrl = table.Column<string>(type: "text", nullable: true),
-                    DirectorId = table.Column<Guid>(type: "uuid", nullable: true)
+                    DirectorId = table.Column<int>(type: "integer", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -82,8 +87,8 @@ namespace KFU.CinemaOnline.DAL.Cinema.Migrations
                 name: "ActorEntityMovieEntity",
                 columns: table => new
                 {
-                    ActorsId = table.Column<Guid>(type: "uuid", nullable: false),
-                    MoviesId = table.Column<Guid>(type: "uuid", nullable: false)
+                    ActorsId = table.Column<int>(type: "integer", nullable: false),
+                    MoviesId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -106,8 +111,8 @@ namespace KFU.CinemaOnline.DAL.Cinema.Migrations
                 name: "GenreEntityMovieEntity",
                 columns: table => new
                 {
-                    GenresId = table.Column<Guid>(type: "uuid", nullable: false),
-                    MoviesId = table.Column<Guid>(type: "uuid", nullable: false)
+                    GenresId = table.Column<int>(type: "integer", nullable: false),
+                    MoviesId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
