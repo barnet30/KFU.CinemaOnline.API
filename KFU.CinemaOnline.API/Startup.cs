@@ -7,6 +7,7 @@ using KFU.CinemaOnline.BL;
 using KFU.CinemaOnline.Common;
 using KFU.CinemaOnline.DAL;
 using KFU.CinemaOnline.DAL.Account;
+using KFU.CinemaOnline.DAL.Cinema;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics;
@@ -87,8 +88,11 @@ namespace KFU.CinemaOnline.API
                 });
             });
             services.AddMvc();
+            
             services.AddDbContextPool<AccountDbContext>(x =>
                 x.UseNpgsql(Configuration.GetConnectionString("AccountConnectionString")));
+            services.AddDbContextPool<CinemaDbContext>(x =>
+                x.UseNpgsql(Configuration.GetConnectionString("CinemaConnectionString")));
 
         }
 
