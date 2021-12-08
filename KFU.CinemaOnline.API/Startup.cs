@@ -99,9 +99,7 @@ namespace KFU.CinemaOnline.API
         public void ConfigureContainer(ContainerBuilder builder)
         {
             builder.RegisterModule<DataAccessDependencyModule>();
-
-            //builder.RegisterModule<MapperDependencyModule>();
-
+            
             builder.RegisterModule<BusinessLogicDependencyModule>();
         }
 
@@ -113,7 +111,6 @@ namespace KFU.CinemaOnline.API
                 errorApp.Run(context => GlobalErrorHandler(context, env));
             });
 
-            
             app.UseStatusCodePages();
 
             app.UseSwagger(c => { c.SerializeAsV2 = true; });
@@ -151,7 +148,6 @@ namespace KFU.CinemaOnline.API
             {
                 return;
             }
-
 
             int statusCode;
             string errorType;
@@ -207,9 +203,6 @@ namespace KFU.CinemaOnline.API
                     message = env.IsDevelopment() ? commonError.ToString() : commonError.Message;
                     break;
             }
-
-            context.Response.StatusCode = statusCode;
-            context.Response.ContentType = "application/json";
             var error = new ErrorModel
             {
                 StatusCode = statusCode,
@@ -217,7 +210,7 @@ namespace KFU.CinemaOnline.API
                 Message = message,
                 Time = DateTime.Now
             };
-            await context.Response.WriteAsync(JsonConvert.SerializeObject(error)).ConfigureAwait(false);
+            await context.Response.WriteAsJsonAsync(error);
         }
     }
 }

@@ -15,8 +15,14 @@ namespace KFU.CinemaOnline.API
                 .ForMember(dst => dst.Id, opt => opt.Ignore())
                 .ForMember(dst => dst.Roles, opt => opt.Ignore());
 
-            CreateMap<Genre, GenreEntity>()
-                .ForMember(dst => dst.Id, opt => opt.Ignore());
+            
+            
+            CreateMap<GenreCreate, GenreEntity>()
+                .ForMember(dst => dst.Id, 
+                    opt => opt.Ignore());
+            CreateMap<GenreEntity, Genre>();
+            
+            CreateMap<MovieEntity, Movie>();
         }
     }
 }
