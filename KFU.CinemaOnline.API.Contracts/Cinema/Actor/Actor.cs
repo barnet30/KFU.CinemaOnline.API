@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace KFU.CinemaOnline.API.Contracts.Cinema
+namespace KFU.CinemaOnline.API.Contracts.Cinema.Actor
 {
     public class Actor
     {

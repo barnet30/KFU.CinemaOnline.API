@@ -1,4 +1,4 @@
-﻿namespace KFU.CinemaOnline.API.Contracts.Cinema
+﻿namespace KFU.CinemaOnline.API.Contracts.Cinema.Genre
 {
     public class Genre
     {

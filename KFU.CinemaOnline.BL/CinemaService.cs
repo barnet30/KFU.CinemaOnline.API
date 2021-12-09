@@ -18,14 +18,14 @@ namespace KFU.CinemaOnline.BL
             await _cinemaRepository.CreateGenreEntityAsync(entity);
         }
 
-        public Task CreateActor(ActorEntity entity)
+        public async Task CreateActor(ActorEntity entity)
         {
-            throw new System.NotImplementedException();
+            await _cinemaRepository.CreateActorEntityAsync(entity);
         }
 
-        public Task CreateDirector(DirectorEntity entity)
+        public async Task CreateDirector(DirectorEntity entity)
         {
-            throw new System.NotImplementedException();
+            await _cinemaRepository.CreateDirectorEntityAsync(entity);
         }
 
         public async Task CreateMovie(MovieEntity entity)

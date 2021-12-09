@@ -1,5 +1,7 @@
 using System;
+using System.IO;
 using System.Net;
+using System.Reflection;
 using System.Threading.Tasks;
 using Autofac;
 using AutoMapper;
@@ -86,6 +88,8 @@ namespace KFU.CinemaOnline.API
                     Version = $"v{assemblyVersion}",
                     Title = "KFU CinemaOnline API",
                 });
+                var xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+                c.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFilename));
             });
             services.AddMvc();
             

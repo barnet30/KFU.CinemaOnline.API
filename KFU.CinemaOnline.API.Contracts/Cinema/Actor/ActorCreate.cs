@@ -1,10 +1,9 @@
 ﻿using System;
 
-namespace KFU.CinemaOnline.API.Contracts.Cinema
+namespace KFU.CinemaOnline.API.Contracts.Cinema.Actor
 {
-    public class Director
+    public class ActorCreate
     {
-        public int Id { get; set; }
         public string Name { get; set; }
         public string LastName { get; set; }
         public string ImageUrl { get; set; }
