@@ -11,15 +11,22 @@ namespace KFU.CinemaOnline.Core.Cinema
         Task CreateGenreEntityAsync(GenreEntity entity);
         Task CreateMovieEntityAsync(MovieEntity entity);
 
-        IEnumerable<GenreEntity> GetAllGenreEntitiesAsync();
-        IEnumerable<ActorEntity> GetAllActorEntitiesAsync();
-        IEnumerable<DirectorEntity> GetAllDirectorEntitiesAsync();
-        IEnumerable<MovieEntity> GetAllMovieEntitiesAsync();
+        Task<List<GenreEntity>> GetAllGenreEntitiesAsync();
+        Task<List<ActorEntity>> GetAllActorEntitiesAsync();
+        Task<List<DirectorEntity>> GetAllDirectorEntitiesAsync();
+        Task<List<MovieEntity>> GetAllMovieEntitiesAsync();
 
 
+        Task<DirectorEntity> GetDirectorEntityByIdAsync(int id);
+        Task<ActorEntity> GetActorEntityByIdAsync(int id);
+        Task<GenreEntity> GetGenreEntityByIdAsync(int id);
         Task<MovieEntity> GetMovieEntityByIdAsync(int id);
         
-        Task<AccountEntity> UpdateActorEntityAsync(int entityId, ActorEntity entity);
+        
+        Task<ActorEntity> UpdateActorEntityAsync(ActorEntity entity);
+        Task<GenreEntity> UpdateGenreEntityAsync(GenreEntity entity);
+        Task<DirectorEntity> UpdateDirectorEntityAsync(DirectorEntity entity);
+        Task<MovieEntity> UpdateMovieEntityAsync(MovieEntity entity);
 
     }
 }

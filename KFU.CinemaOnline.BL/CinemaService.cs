@@ -33,15 +33,62 @@ namespace KFU.CinemaOnline.BL
             await _cinemaRepository.CreateMovieEntityAsync(entity);
         }
 
-        public IEnumerable<GenreEntity> GetAllGenres()
+        public async Task<List<GenreEntity>> GetAllGenres()
         {
-            return _cinemaRepository.GetAllGenreEntitiesAsync();
+            return await _cinemaRepository.GetAllGenreEntitiesAsync();
+        }
+
+        public async Task<GenreEntity> GetGenreById(int id)
+        {
+            return await _cinemaRepository.GetGenreEntityByIdAsync(id);
+        }
+
+        public async Task<ActorEntity> GetActorById(int id)
+        {
+            return await _cinemaRepository.GetActorEntityByIdAsync(id);
+        }
+
+        public async Task<DirectorEntity> GetDirectorById(int id)
+        {
+            return await _cinemaRepository.GetDirectorEntityByIdAsync(id);
         }
 
         public async Task<MovieEntity> GetMovieById(int id)
         {
-            var movie =  await _cinemaRepository.GetMovieEntityByIdAsync(id);
-            return movie ?? null;
+            return await _cinemaRepository.GetMovieEntityByIdAsync(id);
         }
+
+        public async Task<ActorEntity> UpdateActor(ActorEntity actorEntity)
+        {
+            if (await _cinemaRepository.GetActorEntityByIdAsync(actorEntity.Id) == null)
+            {
+                return null;
+            }
+            return await _cinemaRepository.UpdateActorEntityAsync(actorEntity);
+        }
+
+        public async Task<GenreEntity> UpdateGenre(GenreEntity genreEntity)
+        {
+            if (await _cinemaRepository.GetGenreEntityByIdAsync(genreEntity.Id) == null)
+            {
+                return null;
+            }
+            return await _cinemaRepository.UpdateGenreEntityAsync(genreEntity);        }
+
+        public async Task<DirectorEntity> UpdateDirector(DirectorEntity directorEntity)
+        {
+            if (await _cinemaRepository.GetDirectorEntityByIdAsync(directorEntity.Id) == null)
+            {
+                return null;
+            }
+            return await _cinemaRepository.UpdateDirectorEntityAsync(directorEntity);        }
+
+        public async Task<MovieEntity> UpdateMovie(MovieEntity movieEntity)
+        {
+            if (await _cinemaRepository.GetMovieEntityByIdAsync(movieEntity.Id) == null)
+            {
+                return null;
+            }
+            return await _cinemaRepository.UpdateMovieEntityAsync(movieEntity);        }
     }
 }

@@ -2,8 +2,9 @@
 
 namespace KFU.CinemaOnline.API.Contracts.Cinema.Movie
 {
-    public class MovieCreate
+    public class MovieUpdate
     {
+        public int Id { get; set; }
         public string Name { get; set; }
         public string Country { get; set; }
         public int Year { get; set; }
@@ -13,7 +14,7 @@ namespace KFU.CinemaOnline.API.Contracts.Cinema.Movie
         
 
         public int DirectorId { get; set; }
-        public IEnumerable<int> Actors { get; set; }
-        public IEnumerable<int> Genres { get; set; }
+        public List<int> Actors { get; set; }
+        public List<int> Genres { get; set; }
     }
 }

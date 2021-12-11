@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Reflection;
@@ -88,10 +89,42 @@ namespace KFU.CinemaOnline.API
                     Version = $"v{assemblyVersion}",
                     Title = "KFU CinemaOnline API",
                 });
+                
+                c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                {
+                    Description = @"JWT Authorization header using the Bearer scheme. \r\n\r\n 
+                      Enter 'Bearer' [space] and then your token in the text input below.
+                      \r\n\r\nExample: 'Bearer 12345abcdef'",
+                    Name = "Authorization",
+                    In = ParameterLocation.Header,
+                    Type = SecuritySchemeType.ApiKey,
+                    Scheme = "Bearer"
+                });
+
+                c.AddSecurityRequirement(new OpenApiSecurityRequirement()
+                {
+                    {
+                        new OpenApiSecurityScheme
+                        {
+                            Reference = new OpenApiReference
+                            {
+                                Type = ReferenceType.SecurityScheme,
+                                Id = "Bearer"
+                            },
+                            Scheme = "oauth2",
+                            Name = "Bearer",
+                            In = ParameterLocation.Header,
+
+                        },
+                        new List<string>()
+                    }
+                });
+                
                 var xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
                 c.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFilename));
             });
             services.AddMvc();
+            services.AddRouting(c => c.LowercaseUrls = true);
             
             services.AddDbContextPool<AccountDbContext>(x =>
                 x.UseNpgsql(Configuration.GetConnectionString("AccountConnectionString")));
@@ -110,15 +143,24 @@ namespace KFU.CinemaOnline.API
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            app.UseStatusCodePages();
             app.UseExceptionHandler(errorApp =>
             {
-                errorApp.Run(context => GlobalErrorHandler(context, env));
+                errorApp.Run( context =>  GlobalErrorHandler(context, env));
             });
-
-            app.UseStatusCodePages();
-
+            
+            app.UseRouting();
+            app.UseCors(options => options.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
+            
+            app.UseAuthentication();
+            app.UseAuthorization();
+            
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllers();
+            });
+            
             app.UseSwagger(c => { c.SerializeAsV2 = true; });
-
             app.UseSwaggerUI(c =>
             {
                 var assemblyVersion = new Version("1.0");
@@ -127,19 +169,6 @@ namespace KFU.CinemaOnline.API
                 c.RoutePrefix = string.Empty;
                 c.DocumentTitle = $"{apiName} Documentation";
                 c.DocExpansion(DocExpansion.None);
-            });
-
-            app.UseHttpsRedirection();
-
-            app.UseRouting();
-            app.UseCors();
-            
-            app.UseAuthentication();
-            app.UseAuthorization();
-
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.MapControllers();
             });
         }
         
@@ -207,6 +236,7 @@ namespace KFU.CinemaOnline.API
                     message = env.IsDevelopment() ? commonError.ToString() : commonError.Message;
                     break;
             }
+
             var error = new ErrorModel
             {
                 StatusCode = statusCode,
