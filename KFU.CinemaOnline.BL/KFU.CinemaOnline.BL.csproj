@@ -10,4 +10,8 @@
     <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="8.1.1" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\KFU.CinemaOnline.Core\KFU.CinemaOnline.Core.csproj" />
+  </ItemGroup>
+
 </Project>

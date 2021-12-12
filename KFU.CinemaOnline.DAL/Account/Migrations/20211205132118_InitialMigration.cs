@@ -1,39 +1,44 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace KFU.CinemaOnline.DAL.Migrations.Identity
+namespace KFU.CinemaOnline.DAL.Account.Migrations
 {
-    public partial class InitMigration : Migration
+    public partial class InitialMigration : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "Users",
+                name: "Accounts",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    Username = table.Column<string>(type: "text", nullable: false),
+                    Email = table.Column<string>(type: "text", nullable: true),
+                    Username = table.Column<string>(type: "text", nullable: true),
                     Password = table.Column<string>(type: "text", nullable: true),
-                    LastName = table.Column<string>(type: "text", nullable: true),
-                    FirstName = table.Column<string>(type: "text", nullable: true),
-                    Email = table.Column<string>(type: "text", nullable: true)
+                    Roles = table.Column<int[]>(type: "integer[]", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Users", x => x.Id);
+                    table.PrimaryKey("PK_Accounts", x => x.Id);
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Users_Email",
-                table: "Users",
+                name: "IX_Accounts_Email",
+                table: "Accounts",
                 column: "Email",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Accounts_Username",
+                table: "Accounts",
+                column: "Username",
                 unique: true);
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "Users");
+                name: "Accounts");
         }
     }
 }
