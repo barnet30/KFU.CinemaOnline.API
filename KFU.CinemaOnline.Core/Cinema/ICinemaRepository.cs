@@ -28,5 +28,11 @@ namespace KFU.CinemaOnline.Core.Cinema
         Task<DirectorEntity> UpdateDirectorEntityAsync(DirectorEntity entity);
         Task<MovieEntity> UpdateMovieEntityAsync(MovieEntity entity);
 
+
+        Task DeleteActorEntityByIdAsync(int id);
+        Task DeleteGenreEntityByIdAsync(int id);
+        Task DeleteDirectorEntityByIdAsync(int id);
+        Task DeleteMovieEntityByIdAsync(int id);
+
     }
 }

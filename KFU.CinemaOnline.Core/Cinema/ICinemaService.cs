@@ -11,6 +11,9 @@ namespace KFU.CinemaOnline.Core.Cinema
         Task CreateMovie(MovieEntity entity);
 
         Task<List<GenreEntity>> GetAllGenres();
+        Task<List<ActorEntity>> GetAllActors();
+        Task<List<DirectorEntity>> GetAllDirectors();
+        Task<List<MovieEntity>> GetAllMovies();
 
 
         Task<GenreEntity> GetGenreById(int id);
@@ -23,6 +26,12 @@ namespace KFU.CinemaOnline.Core.Cinema
         Task<GenreEntity> UpdateGenre(GenreEntity genreEntity);
         Task<DirectorEntity> UpdateDirector(DirectorEntity directorEntity);
         Task<MovieEntity> UpdateMovie(MovieEntity actorEntity);
+
+
+        Task DeleteGenreById(int id);
+        Task DeleteDirectorById(int id);
+        Task DeleteActorById(int id);
+        Task DeleteMovieById(int id);
 
     }
 }

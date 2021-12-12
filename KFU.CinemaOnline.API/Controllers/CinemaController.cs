@@ -327,5 +327,141 @@ namespace KFU.CinemaOnline.API.Controllers
             
             return _mapper.Map<Movie>(updated);
         }
+
+        /// <summary>
+        /// Get list of all genres
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("genres")]
+        public async Task<List<Genre>> GetAllGenresAsync()
+        {
+            return _mapper.Map<List<Genre>>(await _cinemaService.GetAllGenres());
+        }
+
+        /// <summary>
+        /// Get list of all actors
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("actors")]
+        public async Task<List<Actor>> GetAllActorsAsync()
+        {
+            return _mapper.Map<List<Actor>>(await _cinemaService.GetAllActors());
+        }
+
+        /// <summary>
+        /// Get list of all directors
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("directors")]
+        public async Task<List<Director>> GetAllDirectorsAsync()
+        {
+            return _mapper.Map<List<Director>>(await _cinemaService.GetAllDirectors());
+        }
+        
+        /// <summary>
+        /// Get list of all movies
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("movies")]
+        public async Task<List<Movie>> GetAllMoviesAsync()
+        {
+            return _mapper.Map<List<Movie>>(await _cinemaService.GetAllMovies());
+        }
+
+        /// <summary>
+        /// Delete genre by <paramref name="id"/>
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpDelete("genre/{id:int}")]
+        public async Task<IActionResult> DeleteGenreByIdAsync([FromRoute]int id)
+        {
+            try
+            {
+                if (await _cinemaService.GetGenreById(id) == null)
+                {
+                    return NotFound($"Genre with id {id} not found");
+                }
+                await _cinemaService.DeleteGenreById(id);
+            }
+            catch (Exception e)
+            {
+                ErrorResponse.GenerateError(HttpStatusCode.InternalServerError, e.Message);
+            }
+
+            return Ok();
+        }
+        
+        /// <summary>
+        /// Delete actor by <paramref name="id"/>
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpDelete("actor/{id:int}")]
+        public async Task<IActionResult> DeleteActorByIdAsync([FromRoute]int id)
+        {
+            try
+            {
+                if (await _cinemaService.GetActorById(id) == null)
+                {
+                    return NotFound($"Actor with id {id} not found");
+                }
+                await _cinemaService.DeleteActorById(id);
+            }
+            catch (Exception e)
+            {
+                ErrorResponse.GenerateError(HttpStatusCode.InternalServerError, e.Message);
+            }
+
+            return Ok();
+        }
+        
+        /// <summary>
+        /// Delete director by <paramref name="id"/>
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpDelete("director/{id:int}")]
+        public async Task<IActionResult> DeleteDirectorByIdAsync([FromRoute]int id)
+        {
+            try
+            {
+                if (await _cinemaService.GetDirectorById(id) == null)
+                {
+                    return NotFound($"Director with id {id} not found");
+                }
+                await _cinemaService.DeleteDirectorById(id);
+            }
+            catch (Exception e)
+            {
+                ErrorResponse.GenerateError(HttpStatusCode.InternalServerError, e.Message);
+            }
+
+            return Ok();
+        }
+        
+        /// <summary>
+        /// Delete movie by <paramref name="id"/>
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpDelete("movie/{id:int}")]
+        public async Task<IActionResult> DeleteMovieByIdAsync([FromRoute]int id)
+        {
+            try
+            {
+                if (await _cinemaService.GetMovieById(id) == null)
+                {
+                    return NotFound($"Movie with id {id} not found");
+                }
+                await _cinemaService.DeleteMovieById(id);
+            }
+            catch (Exception e)
+            {
+                ErrorResponse.GenerateError(HttpStatusCode.InternalServerError, e.Message);
+            }
+
+            return Ok();
+        }
     }
 }

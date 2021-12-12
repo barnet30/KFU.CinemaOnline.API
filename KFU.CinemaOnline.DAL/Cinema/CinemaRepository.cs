@@ -56,7 +56,11 @@ namespace KFU.CinemaOnline.DAL.Cinema
 
         public async Task<List<MovieEntity>> GetAllMovieEntitiesAsync()
         {
-            return await _context.Movies.ToListAsync();
+            return await _context.Movies
+                .Include(x=>x.Actors)
+                .Include(x=>x.Genres)
+                .Include(x=>x.Director)
+                .ToListAsync();
         }
 
         public async Task<DirectorEntity> GetDirectorEntityByIdAsync(int id)
@@ -132,5 +136,30 @@ namespace KFU.CinemaOnline.DAL.Cinema
             return updateEntity;
             
         }
+
+        public async Task DeleteActorEntityByIdAsync(int id)
+        {
+            var entity = await _context.Actors.FirstOrDefaultAsync(x=>x.Id == id);
+            _context.Actors.Remove(entity);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task DeleteGenreEntityByIdAsync(int id)
+        {
+            var entity = await _context.Genres.FirstOrDefaultAsync(x=>x.Id == id);
+            _context.Genres.Remove(entity);
+            await _context.SaveChangesAsync();        }
+
+        public async Task DeleteDirectorEntityByIdAsync(int id)
+        {
+            var entity = await _context.Directors.FirstOrDefaultAsync(x=>x.Id == id);
+            _context.Directors.Remove(entity);
+            await _context.SaveChangesAsync();        }
+
+        public async Task DeleteMovieEntityByIdAsync(int id)
+        {
+            var entity = await _context.Movies.FirstOrDefaultAsync(x=>x.Id == id);
+            _context.Movies.Remove(entity);
+            await _context.SaveChangesAsync();        }
     }
 }

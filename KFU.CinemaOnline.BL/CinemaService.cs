@@ -38,6 +38,21 @@ namespace KFU.CinemaOnline.BL
             return await _cinemaRepository.GetAllGenreEntitiesAsync();
         }
 
+        public async Task<List<ActorEntity>> GetAllActors()
+        {
+            return await _cinemaRepository.GetAllActorEntitiesAsync();
+        }
+
+        public async Task<List<DirectorEntity>> GetAllDirectors()
+        {
+            return await _cinemaRepository.GetAllDirectorEntitiesAsync();
+        }
+
+        public async Task<List<MovieEntity>> GetAllMovies()
+        {
+            return await _cinemaRepository.GetAllMovieEntitiesAsync();
+        }
+
         public async Task<GenreEntity> GetGenreById(int id)
         {
             return await _cinemaRepository.GetGenreEntityByIdAsync(id);
@@ -90,5 +105,25 @@ namespace KFU.CinemaOnline.BL
                 return null;
             }
             return await _cinemaRepository.UpdateMovieEntityAsync(movieEntity);        }
+
+        public async Task DeleteGenreById(int id)
+        {
+            await _cinemaRepository.DeleteGenreEntityByIdAsync(id);
+        }
+
+        public async Task DeleteDirectorById(int id)
+        {
+            await _cinemaRepository.DeleteDirectorEntityByIdAsync(id);
+        }
+
+        public async Task DeleteActorById(int id)
+        {
+            await _cinemaRepository.DeleteActorEntityByIdAsync(id);
+        }
+
+        public async Task DeleteMovieById(int id)
+        {
+            await _cinemaRepository.DeleteMovieEntityByIdAsync(id);
+        }
     }
 }
