@@ -68,13 +68,13 @@ namespace KFU.CinemaOnline.API.Controllers
         /// </summary>
         /// <param name="newMovie"></param>
         [HttpPost("movie")]
-        public async Task CreateMovieAsync([FromBody] MovieCreate newMovie)
+        public async Task<IActionResult> CreateMovieAsync([FromBody] MovieCreate newMovie)
         {
             var director = await _cinemaService.GetDirectorById(newMovie.DirectorId);
             if (director == null)
             {
-                ErrorResponse.GenerateError(HttpStatusCode.NotFound,
-                    $"Director with id {newMovie.DirectorId} not found");
+                return NotFound(ErrorResponse.GenerateError(HttpStatusCode.NotFound,
+                    $"Director with id {newMovie.DirectorId} not found"));
             }
             
             var genres = new List<GenreEntity>();
@@ -83,12 +83,14 @@ namespace KFU.CinemaOnline.API.Controllers
                 var genre = await _cinemaService.GetGenreById(genreId);
                 if (genre == null)
                 {
-                    ErrorResponse.GenerateError(HttpStatusCode.NotFound, $"Genre with id {genreId} not found");
+                    return NotFound(ErrorResponse.GenerateError(HttpStatusCode.NotFound, 
+                        $"Genre with id {genreId} not found"));
                 }
 
                 if (genres.Contains(genre))
                 {
-                    ErrorResponse.GenerateError(HttpStatusCode.BadRequest, "Genres can not be repeated");
+                    return BadRequest(ErrorResponse.GenerateError(HttpStatusCode.BadRequest, 
+                        "Genres can not be repeated"));
                 }
                 
                 genres.Add(genre);
@@ -100,12 +102,14 @@ namespace KFU.CinemaOnline.API.Controllers
                 var actor = await _cinemaService.GetActorById(actorId);
                 if (actor == null)
                 {
-                    ErrorResponse.GenerateError(HttpStatusCode.NotFound, $"Actor with id {actorId} not found");
+                    return NotFound(ErrorResponse.GenerateError(HttpStatusCode.NotFound, 
+                        $"Actor with id {actorId} not found"));
                 }
 
                 if (actors.Contains(actor))
                 {
-                    ErrorResponse.GenerateError(HttpStatusCode.BadRequest, "Actors can not be repeated");
+                    return BadRequest(ErrorResponse.GenerateError(HttpStatusCode.BadRequest, 
+                        "Actors can not be repeated"));
                 }
 
                 actors.Add(actor);
@@ -125,6 +129,7 @@ namespace KFU.CinemaOnline.API.Controllers
             };
 
             await _cinemaService.CreateMovie(createdMovie);
+            return Ok();
         }
 
         
@@ -135,14 +140,14 @@ namespace KFU.CinemaOnline.API.Controllers
         /// <returns></returns>
         [HttpGet("movie/{id:int}")]
         [ProducesResponseType(typeof(ErrorModel), (int) HttpStatusCode.NotFound)]
-        public async Task<Movie> GetMovieByIdAsync([FromRoute]int id)
+        public async Task<ActionResult<Movie>> GetMovieByIdAsync([FromRoute]int id)
         {
             var movie = await _cinemaService.GetMovieById(id);
 
             if (movie == null)
             {
-                ErrorResponse.GenerateError(HttpStatusCode.NotFound,$"Movie with id {id} not found");
-                //return NotFound($"Movie with id {id} not found");
+                return NotFound(ErrorResponse.GenerateError(HttpStatusCode.NotFound, 
+                    $"Movie with id {id} not found"));
             }
 
             return _mapper.Map<Movie>(movie);
@@ -160,7 +165,7 @@ namespace KFU.CinemaOnline.API.Controllers
             
             if (actor == null)
             {
-                return NotFound($"Actor with id {id} not found");
+                return NotFound(ErrorResponse.GenerateError(HttpStatusCode.NotFound, $"Actor with id {id} not found"));
             }
 
             return _mapper.Map<Actor>(actor);
@@ -178,7 +183,8 @@ namespace KFU.CinemaOnline.API.Controllers
 
             if (director == null)
             {
-                return NotFound($"Director with id {id} not found");
+                return NotFound(
+                    ErrorResponse.GenerateError(HttpStatusCode.NotFound, $"Director with id {id} not found"));
             }
 
             return _mapper.Map<Director>(director);
@@ -196,7 +202,8 @@ namespace KFU.CinemaOnline.API.Controllers
 
             if (genre == null)
             {
-                return NotFound($"Genre with id {id} not found");
+                return NotFound(ErrorResponse.GenerateError(HttpStatusCode.NotFound, 
+                    $"Genre with id {id} not found"));
             }
 
             return _mapper.Map<Genre>(genre);
@@ -213,7 +220,8 @@ namespace KFU.CinemaOnline.API.Controllers
             var updated = await _cinemaService.UpdateActor(_mapper.Map<ActorEntity>(newActor));
             if (updated == null)
             {
-                return NotFound($"Actor with id {newActor.Id} not found");
+                return NotFound(ErrorResponse.GenerateError(HttpStatusCode.NotFound,
+                    $"Actor with id {newActor.Id} not found"));
             }
 
             return _mapper.Map<Actor>(updated);
@@ -230,7 +238,8 @@ namespace KFU.CinemaOnline.API.Controllers
             var updated = await _cinemaService.UpdateDirector(_mapper.Map<DirectorEntity>(newDirector));
             if (updated == null)
             {
-                return NotFound($"Director with id {newDirector.Id} not found");
+                return NotFound(ErrorResponse.GenerateError(HttpStatusCode.NotFound,
+                    $"Director with id {newDirector.Id} not found"));
             }
 
             return _mapper.Map<Director>(updated);
@@ -247,7 +256,8 @@ namespace KFU.CinemaOnline.API.Controllers
             var updated = await _cinemaService.UpdateGenre(_mapper.Map<GenreEntity>(newGenre));
             if (updated == null)
             {
-                return NotFound($"Genre with id {newGenre.Id} not found");
+                return NotFound(ErrorResponse.GenerateError(HttpStatusCode.NotFound,
+                    $"Genre with id {newGenre.Id} not found"));
             }
 
             return _mapper.Map<Genre>(updated);
@@ -264,7 +274,8 @@ namespace KFU.CinemaOnline.API.Controllers
             var movie = await _cinemaService.GetMovieById(newMovie.Id);
             if (movie == null)
             {
-                return NotFound($"Movie with id {newMovie.Id} not found");
+                return NotFound(ErrorResponse.GenerateError(HttpStatusCode.NotFound,
+                    $"Movie with id {newMovie.Id} not found"));
             }
 
              
@@ -276,12 +287,14 @@ namespace KFU.CinemaOnline.API.Controllers
                 var genre = await _cinemaService.GetGenreById(genreId);
                 if (genre == null)
                 {
-                    return NotFound($"Genre with id {genreId} not found");
+                    return NotFound(ErrorResponse.GenerateError(HttpStatusCode.NotFound,
+                        $"Genre with id {genreId} not found"));
                 }
 
                 if (updatedGenresList.Contains(genre))
                 {
-                    return BadRequest($"Genre {genre.Name} already added");
+                    return BadRequest(ErrorResponse.GenerateError(HttpStatusCode.BadRequest,
+                        $"Genre {genre.Name} already added"));
                 }
 
                 updatedGenresList.Add(genre);
@@ -292,12 +305,14 @@ namespace KFU.CinemaOnline.API.Controllers
                 var actor = await _cinemaService.GetActorById(actorId);
                 if (actor == null)
                 {
-                    return NotFound($"Actor with id {actorId} not found");
+                    return NotFound(ErrorResponse.GenerateError(HttpStatusCode.NotFound,
+                        $"Actor with id {actorId} not found"));
                 }
 
                 if (updatedActorsList.Contains(actor))
                 {
-                    return BadRequest($"Actor {actor.Name} already added");
+                    return BadRequest(ErrorResponse.GenerateError(HttpStatusCode.BadRequest,
+                        $"Actor {actor.Name} already added"));
                 }
 
                 updatedActorsList.Add(actor);
@@ -306,7 +321,8 @@ namespace KFU.CinemaOnline.API.Controllers
             var newDirector = await _cinemaService.GetDirectorById(newMovie.DirectorId);
             if (newDirector == null)
             {
-                return NotFound($"Director with id {newMovie.DirectorId} not found");
+                return NotFound(ErrorResponse.GenerateError(HttpStatusCode.NotFound,
+                    $"Director with id {newMovie.DirectorId} not found"));
             }
 
             movie = new MovieEntity
@@ -380,13 +396,14 @@ namespace KFU.CinemaOnline.API.Controllers
             {
                 if (await _cinemaService.GetGenreById(id) == null)
                 {
-                    return NotFound($"Genre with id {id} not found");
+                    return NotFound(ErrorResponse.GenerateError(HttpStatusCode.NotFound,
+                        $"Genre with id {id} not found"));
                 }
                 await _cinemaService.DeleteGenreById(id);
             }
             catch (Exception e)
             {
-                ErrorResponse.GenerateError(HttpStatusCode.InternalServerError, e.Message);
+                return BadRequest(ErrorResponse.GenerateError(HttpStatusCode.InternalServerError, e.Message));
             }
 
             return Ok();
@@ -404,13 +421,14 @@ namespace KFU.CinemaOnline.API.Controllers
             {
                 if (await _cinemaService.GetActorById(id) == null)
                 {
-                    return NotFound($"Actor with id {id} not found");
+                    return NotFound(ErrorResponse.GenerateError(HttpStatusCode.NotFound,
+                        $"Actor with id {id} not found"));
                 }
                 await _cinemaService.DeleteActorById(id);
             }
             catch (Exception e)
             {
-                ErrorResponse.GenerateError(HttpStatusCode.InternalServerError, e.Message);
+                return BadRequest(ErrorResponse.GenerateError(HttpStatusCode.InternalServerError, e.Message));
             }
 
             return Ok();
@@ -428,13 +446,14 @@ namespace KFU.CinemaOnline.API.Controllers
             {
                 if (await _cinemaService.GetDirectorById(id) == null)
                 {
-                    return NotFound($"Director with id {id} not found");
+                    return NotFound(ErrorResponse.GenerateError(HttpStatusCode.NotFound,
+                        $"Director with id {id} not found"));
                 }
                 await _cinemaService.DeleteDirectorById(id);
             }
             catch (Exception e)
             {
-                ErrorResponse.GenerateError(HttpStatusCode.InternalServerError, e.Message);
+                return BadRequest(ErrorResponse.GenerateError(HttpStatusCode.InternalServerError, e.Message));
             }
 
             return Ok();
@@ -452,13 +471,14 @@ namespace KFU.CinemaOnline.API.Controllers
             {
                 if (await _cinemaService.GetMovieById(id) == null)
                 {
-                    return NotFound($"Movie with id {id} not found");
+                    return NotFound(ErrorResponse.GenerateError(HttpStatusCode.NotFound,
+                        $"Movie with id {id} not found"));
                 }
                 await _cinemaService.DeleteMovieById(id);
             }
             catch (Exception e)
             {
-                ErrorResponse.GenerateError(HttpStatusCode.InternalServerError, e.Message);
+                return BadRequest(ErrorResponse.GenerateError(HttpStatusCode.InternalServerError, e.Message));
             }
 
             return Ok();
