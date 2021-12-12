@@ -8,7 +8,7 @@ namespace KFU.CinemaOnline.Common
     {
         public static void GenerateError(HttpStatusCode statusCode, string message)
         {
-            throw new HttpOperationException
+            throw new HttpOperationException()
             {
                 Response = new HttpResponseMessageWrapper(new HttpResponseMessage(statusCode), message)
                     {Content = message}
