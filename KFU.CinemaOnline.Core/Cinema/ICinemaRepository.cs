@@ -6,10 +6,10 @@ namespace KFU.CinemaOnline.Core.Cinema
 {
     public interface ICinemaRepository
     {
-        Task CreateActorEntityAsync(ActorEntity entity);
-        Task CreateDirectorEntityAsync(DirectorEntity entity);
-        Task CreateGenreEntityAsync(GenreEntity entity);
-        Task CreateMovieEntityAsync(MovieEntity entity);
+        Task<ActorEntity> CreateActorEntityAsync(ActorEntity entity);
+        Task<DirectorEntity> CreateDirectorEntityAsync(DirectorEntity entity);
+        Task<GenreEntity> CreateGenreEntityAsync(GenreEntity entity);
+        Task<MovieEntity> CreateMovieEntityAsync(MovieEntity entity);
 
         Task<List<GenreEntity>> GetAllGenreEntitiesAsync();
         Task<List<ActorEntity>> GetAllActorEntitiesAsync();
@@ -34,5 +34,7 @@ namespace KFU.CinemaOnline.Core.Cinema
         Task DeleteDirectorEntityByIdAsync(int id);
         Task DeleteMovieEntityByIdAsync(int id);
 
+        
+        
     }
 }

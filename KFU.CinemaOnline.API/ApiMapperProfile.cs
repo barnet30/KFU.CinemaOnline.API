@@ -38,6 +38,7 @@ namespace KFU.CinemaOnline.API
             
             CreateMap<MovieEntity, Movie>();
             CreateMap<Movie, MovieEntity>();
+            CreateMap<MovieCreate, MovieCreateModel>();
         }
     }
 }

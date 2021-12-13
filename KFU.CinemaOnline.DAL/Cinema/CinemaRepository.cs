@@ -16,27 +16,32 @@ namespace KFU.CinemaOnline.DAL.Cinema
             _context = context;
         }
 
-        public async Task CreateActorEntityAsync(ActorEntity entity)
+        public async Task<ActorEntity> CreateActorEntityAsync(ActorEntity entity)
         {
             await _context.Actors.AddAsync(entity);
             await _context.SaveChangesAsync();
+            return entity;
         }
 
-        public async Task CreateDirectorEntityAsync(DirectorEntity entity)
+        public async Task<DirectorEntity> CreateDirectorEntityAsync(DirectorEntity entity)
         {
             await _context.Directors.AddAsync(entity);
-            await _context.SaveChangesAsync();        }
+            await _context.SaveChangesAsync();
+            return entity;
+        }
 
-        public async Task CreateGenreEntityAsync(GenreEntity entity)
+        public async Task<GenreEntity> CreateGenreEntityAsync(GenreEntity entity)
         {
             await _context.Genres.AddAsync(entity);
             await _context.SaveChangesAsync();
+            return entity;
         }
 
-        public async Task CreateMovieEntityAsync(MovieEntity entity)
+        public async Task<MovieEntity> CreateMovieEntityAsync(MovieEntity entity)
         {
             await _context.Movies.AddAsync(entity);
             await _context.SaveChangesAsync();
+            return entity;
         }
 
         public async Task<List<GenreEntity>> GetAllGenreEntitiesAsync()

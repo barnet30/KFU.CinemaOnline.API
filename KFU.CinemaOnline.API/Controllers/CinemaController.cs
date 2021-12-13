@@ -5,6 +5,7 @@ using System.Net;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using AutoMapper;
+using KFU.CinemaOnline.API.Contracts;
 using KFU.CinemaOnline.API.Contracts.Cinema;
 using KFU.CinemaOnline.API.Contracts.Cinema.Actor;
 using KFU.CinemaOnline.API.Contracts.Cinema.Director;
@@ -37,10 +38,11 @@ namespace KFU.CinemaOnline.API.Controllers
         /// </summary>
         /// <param name="genre"></param>
         [HttpPost("genre")]
-        [Authorize(Roles = "Admin")]
-        public async Task CreateGenreAsync([FromBody] GenreCreate genre)
+        //[Authorize(Roles = "Admin")]
+        public async Task<Genre> CreateGenreAsync([FromBody] GenreCreate genre)
         {
-            await _cinemaService.CreateGenre(_mapper.Map<GenreEntity>(genre));
+            var result = await _cinemaService.CreateGenre(_mapper.Map<GenreEntity>(genre));
+            return _mapper.Map<Genre>(result);
         }
 
         /// <summary>
@@ -48,9 +50,10 @@ namespace KFU.CinemaOnline.API.Controllers
         /// </summary>
         /// <param name="newActor"></param>
         [HttpPost("actor")]
-        public async Task CreateActorAsync([FromBody] ActorCreate newActor)
+        public async Task<Actor> CreateActorAsync([FromBody] ActorCreate newActor)
         {
-            await _cinemaService.CreateActor(_mapper.Map<ActorEntity>(newActor));
+            var result = await _cinemaService.CreateActor(_mapper.Map<ActorEntity>(newActor));
+            return _mapper.Map<Actor>(result);
         }
 
         /// <summary>
@@ -58,9 +61,10 @@ namespace KFU.CinemaOnline.API.Controllers
         /// </summary>
         /// <param name="newDirector"></param>
         [HttpPost("director")]
-        public async Task CreateDirectorAsync([FromBody] DirectorCreate newDirector)
+        public async Task<Director> CreateDirectorAsync([FromBody] DirectorCreate newDirector)
         {
-            await _cinemaService.CreateDirector(_mapper.Map<DirectorEntity>(newDirector));
+            var result = await _cinemaService.CreateDirector(_mapper.Map<DirectorEntity>(newDirector));
+            return _mapper.Map<Director>(result);
         }
         
         /// <summary>
@@ -68,68 +72,16 @@ namespace KFU.CinemaOnline.API.Controllers
         /// </summary>
         /// <param name="newMovie"></param>
         [HttpPost("movie")]
-        public async Task<IActionResult> CreateMovieAsync([FromBody] MovieCreate newMovie)
+        public async Task<ActionResult<Movie>> CreateMovieAsync([FromBody] MovieCreate newMovie)
         {
-            var director = await _cinemaService.GetDirectorById(newMovie.DirectorId);
-            if (director == null)
+            var result = await _cinemaService.CreateMovie(_mapper.Map<MovieCreateModel>(newMovie));
+
+            if (result.Movie == null)
             {
-                return NotFound(ErrorResponse.GenerateError(HttpStatusCode.NotFound,
-                    $"Director with id {newMovie.DirectorId} not found"));
+                return BadRequest(ErrorResponse.GenerateError(HttpStatusCode.BadRequest, result.ErrorMessage));
             }
             
-            var genres = new List<GenreEntity>();
-            foreach (var genreId in newMovie.Genres)
-            {
-                var genre = await _cinemaService.GetGenreById(genreId);
-                if (genre == null)
-                {
-                    return NotFound(ErrorResponse.GenerateError(HttpStatusCode.NotFound, 
-                        $"Genre with id {genreId} not found"));
-                }
-
-                if (genres.Contains(genre))
-                {
-                    return BadRequest(ErrorResponse.GenerateError(HttpStatusCode.BadRequest, 
-                        "Genres can not be repeated"));
-                }
-                
-                genres.Add(genre);
-            }
-
-            var actors = new List<ActorEntity>();
-            foreach (var actorId in newMovie.Actors)
-            {
-                var actor = await _cinemaService.GetActorById(actorId);
-                if (actor == null)
-                {
-                    return NotFound(ErrorResponse.GenerateError(HttpStatusCode.NotFound, 
-                        $"Actor with id {actorId} not found"));
-                }
-
-                if (actors.Contains(actor))
-                {
-                    return BadRequest(ErrorResponse.GenerateError(HttpStatusCode.BadRequest, 
-                        "Actors can not be repeated"));
-                }
-
-                actors.Add(actor);
-            }
-            
-            var createdMovie = new MovieEntity
-            {
-                Name = newMovie.Name,
-                Year = newMovie.Year,
-                Country = newMovie.Country,
-                Description = newMovie.Description,
-                ImageUrl = newMovie.ImageUrl,
-                MovieUrl = newMovie.MovieUrl,
-                Director = director,
-                Genres = genres,
-                Actors = actors
-            };
-
-            await _cinemaService.CreateMovie(createdMovie);
-            return Ok();
+            return _mapper.Map<Movie>(result.Movie);
         }
 
         
@@ -379,9 +331,16 @@ namespace KFU.CinemaOnline.API.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet("movies")]
-        public async Task<List<Movie>> GetAllMoviesAsync()
+        public async Task<Page<Movie>> GetFilteringMovieListAsync(MovieFilterRequest request)
         {
-            return _mapper.Map<List<Movie>>(await _cinemaService.GetAllMovies());
+            if (request.Limit == 0)
+            {
+                request.Limit = 10;
+            }
+
+            return _mapper.Map<Page<Movie>>(
+                await _cinemaService.QueryMovieItems(_mapper.Map<MovieFilterSettings>(request)));
+            //return _mapper.Map<Page<Movie>>(await _cinemaService.GetAllMovies());
         }
 
         /// <summary>
