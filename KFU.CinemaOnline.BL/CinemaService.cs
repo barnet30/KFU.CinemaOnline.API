@@ -130,9 +130,9 @@ namespace KFU.CinemaOnline.BL
             return await _cinemaRepository.GetAllDirectorEntitiesAsync();
         }
 
-        public async Task<List<MovieEntity>> GetAllMovies()
+        public async Task<PagingResult<MovieEntity>> GetFilteredMovies(MovieFilterSettings filter)
         {
-            return await _cinemaRepository.GetAllMovieEntitiesAsync();
+            return await _cinemaRepository.GetQueryMoviesAsync(filter);
         }
 
         public async Task<GenreEntity> GetGenreById(int id)

@@ -1,9 +1,11 @@
 ﻿using AutoMapper;
+using KFU.CinemaOnline.API.Contracts;
 using KFU.CinemaOnline.API.Contracts.Account;
 using KFU.CinemaOnline.API.Contracts.Cinema.Actor;
 using KFU.CinemaOnline.API.Contracts.Cinema.Director;
 using KFU.CinemaOnline.API.Contracts.Cinema.Genre;
 using KFU.CinemaOnline.API.Contracts.Cinema.Movie;
+using KFU.CinemaOnline.Common;
 using KFU.CinemaOnline.Core.Account;
 using KFU.CinemaOnline.Core.Cinema;
 
@@ -39,6 +41,13 @@ namespace KFU.CinemaOnline.API
             CreateMap<MovieEntity, Movie>();
             CreateMap<Movie, MovieEntity>();
             CreateMap<MovieCreate, MovieCreateModel>();
+
+            CreateMap<PagingParameters, PagingSettings>().ReverseMap();
+            CreateMap<PagingSortParameters, PagingSortSettings>().ReverseMap();
+            CreateMap<PagingSortOrder, SortOrder>().ReverseMap();
+            CreateMap(typeof(PagingResult<>), typeof(Page<>));
+            
+            CreateMap<MovieFilterRequest, MovieFilterSettings>();
         }
     }
 }

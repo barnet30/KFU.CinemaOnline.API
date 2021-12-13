@@ -5,8 +5,8 @@
     /// </summary>
     public class MovieFilterRequest : PagingSortParameters
     {
-        public int YearMax { get; set; }
-        public int YearMin { get; set; }
+        public int? YearMax { get; set; }
+        public int? YearMin { get; set; }
         public string Name { get; set; }
         public string Country { get; set; }
     }

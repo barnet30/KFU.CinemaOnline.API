@@ -4,10 +4,8 @@ using KFU.CinemaOnline.Core.Account;
 
 namespace KFU.CinemaOnline.Core.Cinema
 {
-    public class MovieEntity 
+    public class MovieEntity : BaseCinemaEntity
     {
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int Id { get; set; }
         public string Name { get; set; }
         public string Country { get; set; }
         public int Year { get; set; }

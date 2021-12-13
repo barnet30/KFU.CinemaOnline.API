@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Net;
 using System.Security.Claims;
@@ -330,17 +331,20 @@ namespace KFU.CinemaOnline.API.Controllers
         /// Get list of all movies
         /// </summary>
         /// <returns></returns>
-        [HttpGet("movies")]
-        public async Task<Page<Movie>> GetFilteringMovieListAsync(MovieFilterRequest request)
+        [HttpPost("movies")]
+        public async Task<Page<Movie>> GetFilteredMovieListAsync([FromBody, Required] MovieFilterRequest request)
         {
             if (request.Limit == 0)
             {
                 request.Limit = 10;
             }
 
-            return _mapper.Map<Page<Movie>>(
-                await _cinemaService.QueryMovieItems(_mapper.Map<MovieFilterSettings>(request)));
-            //return _mapper.Map<Page<Movie>>(await _cinemaService.GetAllMovies());
+            // TODO добаить фильтр по жанрам
+            
+            var movieList = await _cinemaService
+                .GetFilteredMovies(_mapper.Map<MovieFilterSettings>(request));
+            
+            return _mapper.Map<Page<Movie>>(movieList);
         }
 
         /// <summary>

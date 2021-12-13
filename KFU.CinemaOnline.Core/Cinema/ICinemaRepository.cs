@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using KFU.CinemaOnline.Common;
 using KFU.CinemaOnline.Core.Account;
 
 namespace KFU.CinemaOnline.Core.Cinema
@@ -34,7 +35,6 @@ namespace KFU.CinemaOnline.Core.Cinema
         Task DeleteDirectorEntityByIdAsync(int id);
         Task DeleteMovieEntityByIdAsync(int id);
 
-        
-        
+        Task<PagingResult<MovieEntity>> GetQueryMoviesAsync(MovieFilterSettings filterSettings);
     }
 }

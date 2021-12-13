@@ -14,7 +14,7 @@ namespace KFU.CinemaOnline.Core.Cinema
         Task<List<GenreEntity>> GetAllGenres();
         Task<List<ActorEntity>> GetAllActors();
         Task<List<DirectorEntity>> GetAllDirectors();
-        Task<List<MovieEntity>> GetAllMovies();
+        Task<PagingResult<MovieEntity>> GetFilteredMovies(MovieFilterSettings filter);
 
 
         Task<GenreEntity> GetGenreById(int id);
@@ -33,8 +33,5 @@ namespace KFU.CinemaOnline.Core.Cinema
         Task DeleteDirectorById(int id);
         Task DeleteActorById(int id);
         Task DeleteMovieById(int id);
-
-
-        Task<PagingResult<MovieEntity>> QueryMovieItems(MovieFilterSettings pagingSettings);
     }
 }
