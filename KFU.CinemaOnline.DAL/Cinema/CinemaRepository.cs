@@ -225,7 +225,7 @@ namespace KFU.CinemaOnline.DAL.Cinema
 
         private async Task<PagingResult<TEntity>> QueryItems<TEntity>(IQueryable<TEntity> query,
             PagingSortSettings pagingSettings, Expression<Func<TEntity, object>> resolveSortColumns)
-            where TEntity : BaseCinemaEntity 
+            where TEntity : BaseEntity 
         {
             var total = await query.CountAsync();
             if (total == 0)

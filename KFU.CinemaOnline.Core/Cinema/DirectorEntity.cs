@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace KFU.CinemaOnline.Core.Cinema
 {
-    public class DirectorEntity  : BaseCinemaEntity
+    public class DirectorEntity  : BaseEntity
     {
         public string Name { get; set; }
         public string LastName { get; set; }

@@ -4,7 +4,7 @@ using KFU.CinemaOnline.Core.Account;
 
 namespace KFU.CinemaOnline.Core.Cinema
 {
-    public class MovieEntity : BaseCinemaEntity
+    public class MovieEntity : BaseEntity
     {
         public string Name { get; set; }
         public string Country { get; set; }
