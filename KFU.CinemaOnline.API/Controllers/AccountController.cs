@@ -86,7 +86,8 @@ namespace KFU.CinemaOnline.API.Controllers
             };
             
             claims.AddRange(account.Roles.Select(role => new Claim("role", role.ToString())));
-
+            claims.Add(new Claim("id", account.Id.ToString()));
+            
             var token = new JwtSecurityToken(
                 authParams.Issuer,
                 authParams.Audience,
