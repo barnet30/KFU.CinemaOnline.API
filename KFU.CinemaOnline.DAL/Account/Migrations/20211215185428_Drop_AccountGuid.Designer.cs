@@ -3,15 +3,17 @@ using System;
 using KFU.CinemaOnline.DAL.Account;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace KFU.CinemaOnline.DAL.Account.Migrations
 {
     [DbContext(typeof(AccountDbContext))]
-    partial class AccountDbContextModelSnapshot : ModelSnapshot
+    [Migration("20211215185428_Drop_AccountGuid")]
+    partial class Drop_AccountGuid
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -21,11 +23,6 @@ namespace KFU.CinemaOnline.DAL.Account.Migrations
 
             modelBuilder.Entity("KFU.CinemaOnline.Core.Account.AccountEntity", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
-
                     b.Property<string>("Email")
                         .HasColumnType("text");
 
@@ -37,8 +34,6 @@ namespace KFU.CinemaOnline.DAL.Account.Migrations
 
                     b.Property<string>("Username")
                         .HasColumnType("text");
-
-                    b.HasKey("Id");
 
                     b.HasIndex("Email")
                         .IsUnique();

@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace KFU.CinemaOnline.Core.Cinema
 {
-    public class GenreEntity : BaseCinemaEntity
+    public class GenreEntity : BaseEntity
     {
         public string Name { get; set; }
         public string Description { get; set; }
