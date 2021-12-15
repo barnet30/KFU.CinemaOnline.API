@@ -1,8 +1,13 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
+using KFU.CinemaOnline.Common;
+using KFU.CinemaOnline.Core;
 using KFU.CinemaOnline.Core.Account;
 using KFU.CinemaOnline.Core.Cinema;
+using LinqKit;
 using Microsoft.EntityFrameworkCore;
 
 namespace KFU.CinemaOnline.DAL.Cinema
@@ -16,27 +21,32 @@ namespace KFU.CinemaOnline.DAL.Cinema
             _context = context;
         }
 
-        public async Task CreateActorEntityAsync(ActorEntity entity)
+        public async Task<ActorEntity> CreateActorEntityAsync(ActorEntity entity)
         {
             await _context.Actors.AddAsync(entity);
             await _context.SaveChangesAsync();
+            return entity;
         }
 
-        public async Task CreateDirectorEntityAsync(DirectorEntity entity)
+        public async Task<DirectorEntity> CreateDirectorEntityAsync(DirectorEntity entity)
         {
             await _context.Directors.AddAsync(entity);
-            await _context.SaveChangesAsync();        }
+            await _context.SaveChangesAsync();
+            return entity;
+        }
 
-        public async Task CreateGenreEntityAsync(GenreEntity entity)
+        public async Task<GenreEntity> CreateGenreEntityAsync(GenreEntity entity)
         {
             await _context.Genres.AddAsync(entity);
             await _context.SaveChangesAsync();
+            return entity;
         }
 
-        public async Task CreateMovieEntityAsync(MovieEntity entity)
+        public async Task<MovieEntity> CreateMovieEntityAsync(MovieEntity entity)
         {
             await _context.Movies.AddAsync(entity);
             await _context.SaveChangesAsync();
+            return entity;
         }
 
         public async Task<List<GenreEntity>> GetAllGenreEntitiesAsync()
@@ -161,5 +171,98 @@ namespace KFU.CinemaOnline.DAL.Cinema
             var entity = await _context.Movies.FirstOrDefaultAsync(x=>x.Id == id);
             _context.Movies.Remove(entity);
             await _context.SaveChangesAsync();        }
+
+        public async Task<PagingResult<MovieEntity>> GetQueryMoviesAsync(MovieFilterSettings filterSettings)
+        {
+            if (filterSettings == null)
+            {
+                var total = await _context.Movies.CountAsync();
+                if (total == 0)
+                {
+                    return PagingResult<MovieEntity>.Empty;
+                }
+
+                var items = await _context.Movies
+                    .Take(PagingSettings.DefaultLimit)
+                    .AsNoTracking()
+                    .ToArrayAsync();
+
+                return new PagingResult<MovieEntity>
+                {
+                    Total = total,
+                    Items = items
+                };
+            }
+
+            var table = _context.Movies
+                .Include(x=>x.Actors)
+                .Include(x=>x.Genres)
+                .Include(x=>x.Director)
+                .AsQueryable();
+            var predicate = PredicateBuilder.New<MovieEntity>(true);
+
+            predicate
+                .And(filterSettings.Country, x => x.Country.Contains(filterSettings.Country))
+                .And(filterSettings.Name, x => x.Name.Contains(filterSettings.Name))
+                .And(filterSettings.YearMax, x => x.Year <= filterSettings.YearMax)
+                .And(filterSettings.YearMin, x => x.Year >= filterSettings.YearMin);
+
+            var query = table.Where(predicate);
+
+            var sortColumns = ResolveMovieSortColumn(filterSettings.SortColumn);
+
+         return await QueryItems(query, filterSettings, sortColumns);
+        }
+
+        private Expression<Func<MovieEntity, object>> ResolveMovieSortColumn(string sortColumn) =>
+            sortColumn.ToLowerInvariant() switch
+            {
+                "year" => x => x.Year,
+                "Name" => x => x.Name,
+                "county" => x => x.Country,
+                _ => null
+            };
+
+        private async Task<PagingResult<TEntity>> QueryItems<TEntity>(IQueryable<TEntity> query,
+            PagingSortSettings pagingSettings, Expression<Func<TEntity, object>> resolveSortColumns)
+            where TEntity : BaseCinemaEntity 
+        {
+            var total = await query.CountAsync();
+            if (total == 0)
+                return PagingResult<TEntity>.Empty;
+            
+            if (pagingSettings.Limit == 0 || pagingSettings.Offset >= total)
+                return new PagingResult<TEntity>
+                {
+                    Total = total,
+                    Items = Array.Empty<TEntity>()
+                };
+            
+            var items = await ApplySortSettings(query,pagingSettings,resolveSortColumns)
+                .Skip(pagingSettings.Offset)
+                .Take(pagingSettings.Limit)
+                .AsNoTracking()
+                .ToArrayAsync();
+            
+            return new PagingResult<TEntity>
+            {
+                Total = total,
+                Items = items
+            };
+        }
+
+        private IQueryable<TEntity> ApplySortSettings<TEntity>(IQueryable<TEntity> query,
+            PagingSortSettings pagingSettings, Expression<Func<TEntity, object>> resolveSortColumns)
+        {
+            if (string.IsNullOrEmpty(pagingSettings.SortColumn))
+                return query;
+
+            if (resolveSortColumns == null)
+                return query;
+
+            return pagingSettings.SortOrder == SortOrder.Desc
+                ? query.OrderByDescending(resolveSortColumns)
+                : query.OrderBy(resolveSortColumns);
+        }
     }
 }

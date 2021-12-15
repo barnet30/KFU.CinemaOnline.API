@@ -1,5 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
+using KFU.CinemaOnline.Common;
 using KFU.CinemaOnline.Core.Cinema;
 
 namespace KFU.CinemaOnline.BL
@@ -13,24 +17,102 @@ namespace KFU.CinemaOnline.BL
             _cinemaRepository = cinemaRepository;
         }
 
-        public async Task CreateGenre(GenreEntity entity)
+        public async Task<GenreEntity> CreateGenre(GenreEntity entity)
         {
-            await _cinemaRepository.CreateGenreEntityAsync(entity);
+            return await _cinemaRepository.CreateGenreEntityAsync(entity);
         }
 
-        public async Task CreateActor(ActorEntity entity)
+        public async Task<ActorEntity> CreateActor(ActorEntity entity)
         {
-            await _cinemaRepository.CreateActorEntityAsync(entity);
+            return await _cinemaRepository.CreateActorEntityAsync(entity);
         }
 
-        public async Task CreateDirector(DirectorEntity entity)
+        public async Task<DirectorEntity> CreateDirector(DirectorEntity entity)
         {
-            await _cinemaRepository.CreateDirectorEntityAsync(entity);
+            return await _cinemaRepository.CreateDirectorEntityAsync(entity);
         }
 
-        public async Task CreateMovie(MovieEntity entity)
+        public async Task<MovieCreateResponseModel> CreateMovie(MovieCreateModel entity)
         {
-            await _cinemaRepository.CreateMovieEntityAsync(entity);
+            var director = await _cinemaRepository.GetDirectorEntityByIdAsync(entity.DirectorId);
+            if (director == null)
+            {
+                return new MovieCreateResponseModel
+                {
+                    Movie = null,
+                    ErrorMessage = $"Director with id {entity.DirectorId} not found"
+                };
+            }
+            
+            var genres = new List<GenreEntity>();
+            foreach (var genreId in entity.Genres)
+            {
+                var genre = await _cinemaRepository.GetGenreEntityByIdAsync(genreId);
+                if (genre == null)
+                {
+                    return new MovieCreateResponseModel
+                    {
+                        Movie = null,
+                        ErrorMessage = $"Genre with id {genreId} not found"
+                    };
+                }
+
+                if (genres.Contains(genre))
+                {
+                    return new MovieCreateResponseModel
+                    {
+                        Movie = null,
+                        ErrorMessage = "Genres can not be repeated"
+                    };
+                }
+                
+                genres.Add(genre);
+            }
+
+            var actors = new List<ActorEntity>();
+            foreach (var actorId in entity.Actors)
+            {
+                var actor = await _cinemaRepository.GetActorEntityByIdAsync(actorId);
+                if (actor == null)
+                {
+                    return new MovieCreateResponseModel
+                    {
+                        Movie = null,
+                        ErrorMessage = $"Actor with id {actorId} not found"
+                    };
+                }
+
+                if (actors.Contains(actor))
+                {
+                    return new MovieCreateResponseModel
+                    {
+                        Movie = null,
+                        ErrorMessage = "Actors can not be repeated"
+                    };
+                }
+
+                actors.Add(actor);
+            }
+            
+            var newMovie = new MovieEntity
+            {
+                Name = entity.Name,
+                Year = entity.Year,
+                Country = entity.Country,
+                Description = entity.Description,
+                ImageUrl = entity.ImageUrl,
+                MovieUrl = entity.MovieUrl,
+                Director = director,
+                Genres = genres,
+                Actors = actors
+            };
+
+            var created = await _cinemaRepository.CreateMovieEntityAsync(newMovie);
+            return new MovieCreateResponseModel
+            {
+                Movie = created,
+                ErrorMessage = null
+            };
         }
 
         public async Task<List<GenreEntity>> GetAllGenres()
@@ -48,9 +130,9 @@ namespace KFU.CinemaOnline.BL
             return await _cinemaRepository.GetAllDirectorEntitiesAsync();
         }
 
-        public async Task<List<MovieEntity>> GetAllMovies()
+        public async Task<PagingResult<MovieEntity>> GetFilteredMovies(MovieFilterSettings filter)
         {
-            return await _cinemaRepository.GetAllMovieEntitiesAsync();
+            return await _cinemaRepository.GetQueryMoviesAsync(filter);
         }
 
         public async Task<GenreEntity> GetGenreById(int id)
@@ -125,5 +207,22 @@ namespace KFU.CinemaOnline.BL
         {
             await _cinemaRepository.DeleteMovieEntityByIdAsync(id);
         }
+
+        public async Task<PagingResult<MovieEntity>> QueryMovieItems(MovieFilterSettings pagingSettings)
+        {
+            throw new NotImplementedException();
+            /*if (pagingSettings == null)
+            {
+                var items = await _cinemaRepository.GetAllMovieEntitiesAsync();
+                return new PagingResult<MovieEntity>
+                {
+                    Total = items.Count,
+                    Items = items.Take(PagingSettings.DefaultLimit).ToArray()
+                };
+            }
+            */
+        }
+        
+        
     }
 }
