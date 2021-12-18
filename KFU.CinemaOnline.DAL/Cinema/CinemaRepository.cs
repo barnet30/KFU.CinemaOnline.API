@@ -5,7 +5,6 @@ using System.Linq.Expressions;
 using System.Threading.Tasks;
 using KFU.CinemaOnline.Common;
 using KFU.CinemaOnline.Core;
-using KFU.CinemaOnline.Core.Account;
 using KFU.CinemaOnline.Core.Cinema;
 using LinqKit;
 using Microsoft.EntityFrameworkCore;

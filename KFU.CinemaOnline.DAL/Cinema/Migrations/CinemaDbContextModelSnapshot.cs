@@ -143,6 +143,9 @@ namespace KFU.CinemaOnline.DAL.Cinema.Migrations
                     b.Property<int?>("DirectorId")
                         .HasColumnType("integer");
 
+                    b.Property<int>("EstimationAmount")
+                        .HasColumnType("integer");
+
                     b.Property<string>("ImageUrl")
                         .HasColumnType("text");
 
@@ -152,6 +155,9 @@ namespace KFU.CinemaOnline.DAL.Cinema.Migrations
                     b.Property<string>("Name")
                         .HasColumnType("text");
 
+                    b.Property<double>("Rating")
+                        .HasColumnType("double precision");
+
                     b.Property<int>("Year")
                         .HasColumnType("integer");
 
@@ -160,6 +166,29 @@ namespace KFU.CinemaOnline.DAL.Cinema.Migrations
                     b.HasIndex("DirectorId");
 
                     b.ToTable("Movies");
+                });
+
+            modelBuilder.Entity("KFU.CinemaOnline.Core.Estimation.EstimationEntity", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+
+                    b.Property<int>("Estimation")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("MovieId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("MovieId");
+
+                    b.ToTable("Estimations");
                 });
 
             modelBuilder.Entity("ActorEntityMovieEntity", b =>
@@ -201,9 +230,25 @@ namespace KFU.CinemaOnline.DAL.Cinema.Migrations
                     b.Navigation("Director");
                 });
 
+            modelBuilder.Entity("KFU.CinemaOnline.Core.Estimation.EstimationEntity", b =>
+                {
+                    b.HasOne("KFU.CinemaOnline.Core.Cinema.MovieEntity", "Movie")
+                        .WithMany("Estimations")
+                        .HasForeignKey("MovieId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Movie");
+                });
+
             modelBuilder.Entity("KFU.CinemaOnline.Core.Cinema.DirectorEntity", b =>
                 {
                     b.Navigation("Movies");
+                });
+
+            modelBuilder.Entity("KFU.CinemaOnline.Core.Cinema.MovieEntity", b =>
+                {
+                    b.Navigation("Estimations");
                 });
 #pragma warning restore 612, 618
         }

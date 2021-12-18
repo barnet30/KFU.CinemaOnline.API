@@ -10,10 +10,12 @@ using KFU.CinemaOnline.API.Contracts;
 using KFU.CinemaOnline.API.Contracts.Account;
 using KFU.CinemaOnline.API.Contracts.Cinema.Actor;
 using KFU.CinemaOnline.API.Contracts.Cinema.Director;
+using KFU.CinemaOnline.API.Contracts.Cinema.Estimation;
 using KFU.CinemaOnline.API.Contracts.Cinema.Genre;
 using KFU.CinemaOnline.API.Contracts.Cinema.Movie;
 using KFU.CinemaOnline.Common;
 using KFU.CinemaOnline.Core.Cinema;
+using KFU.CinemaOnline.Core.Estimation;
 using Microsoft.AspNetCore.Mvc;
 
 namespace KFU.CinemaOnline.API.Controllers
@@ -442,6 +444,16 @@ namespace KFU.CinemaOnline.API.Controllers
             }
 
             return Ok();
+        }
+        
+        /// <summary>
+        /// Update movie rating
+        /// </summary>
+        /// <param name="newEstimation"></param>
+        /// <returns></returns>
+        public async Task<Movie> UpdateMovieRatingAsync(Estimation newEstimation)
+        {
+            throw new NotImplementedException();
         }
         
         /// <summary>

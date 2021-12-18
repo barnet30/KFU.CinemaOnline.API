@@ -10,7 +10,8 @@ namespace KFU.CinemaOnline.DAL
         {
             builder.RegisterTypes(
                     typeof(AccountRepository),
-                    typeof(CinemaRepository))
+                    typeof(CinemaRepository),
+                    typeof(EstimationRepository))
                 .AsImplementedInterfaces()
                 .InstancePerLifetimeScope();
         }
