@@ -9,7 +9,7 @@ namespace KFU.CinemaOnline.Core.Cinema
         Task<GenreEntity> CreateGenre(GenreEntity entity);
         Task<ActorEntity> CreateActor(ActorEntity entity);
         Task<DirectorEntity> CreateDirector(DirectorEntity entity);
-        Task<MovieCreateResponseModel> CreateMovie(MovieCreateModel entity);
+        Task<MovieResponseModel> CreateMovie(MovieCreateModel entity);
 
         Task<List<GenreEntity>> GetAllGenres();
         Task<List<ActorEntity>> GetAllActors();

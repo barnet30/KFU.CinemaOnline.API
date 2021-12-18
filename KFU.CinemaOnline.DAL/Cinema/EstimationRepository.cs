@@ -1,5 +1,4 @@
-﻿using System.Data.Entity;
-using System.Linq;
+﻿using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
 using KFU.CinemaOnline.Core.Estimation;
 using KFU.CinemaOnline.Core.Sql;

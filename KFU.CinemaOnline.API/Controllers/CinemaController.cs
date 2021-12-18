@@ -16,6 +16,7 @@ using KFU.CinemaOnline.API.Contracts.Cinema.Movie;
 using KFU.CinemaOnline.Common;
 using KFU.CinemaOnline.Core.Cinema;
 using KFU.CinemaOnline.Core.Estimation;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace KFU.CinemaOnline.API.Controllers
@@ -25,12 +26,14 @@ namespace KFU.CinemaOnline.API.Controllers
     public class CinemaController : ControllerBase
     {
         private readonly ICinemaService _cinemaService;
+        private readonly IEstimationService _estimationService;
         private readonly IMapper _mapper;
         
-        public CinemaController(ICinemaService cinemaService, IMapper mapper)
+        public CinemaController(ICinemaService cinemaService, IMapper mapper, IEstimationService estimationService)
         {
             _cinemaService = cinemaService;
             _mapper = mapper;
+            _estimationService = estimationService;
         }
 
         /// <summary>
@@ -445,22 +448,35 @@ namespace KFU.CinemaOnline.API.Controllers
 
             return Ok();
         }
-        
+
         /// <summary>
         /// Update movie rating
         /// </summary>
-        /// <param name="newEstimation"></param>
+        /// <param name="rateInput"></param>
+        /// <param name="movieId"></param>
         /// <returns></returns>
-        public async Task<Movie> UpdateMovieRatingAsync(Estimation newEstimation)
+        [Authorize(Roles="User,Admin")]
+        [HttpPost("movie/{movieId:int}/rate")]
+        public async Task<Movie> UpdateMovieRatingAsync([FromBody] EstimationInput rateInput, [FromRoute] int movieId)
         {
-            throw new NotImplementedException();
+            var account = (await ParseJwtToken()).Value;
+            var estimationEntity = new EstimationEntity
+            {
+                MovieId = movieId,
+                Estimation = rateInput.Rate,
+                UserId = account.Id
+            };
+            var movie = await _estimationService.UpdateRating(estimationEntity);
+            var mappedMovie = _mapper.Map<Movie>(movie.Movie);
+
+            return mappedMovie;
         }
         
         /// <summary>
         /// Метод для парсинга jwt токена
         /// </summary>
         /// <returns></returns>
-        private ActionResult<Account> ParseJwtToken()
+        private async Task<ActionResult<Account>> ParseJwtToken()
         {
             var userClaims = User?.Claims.ToList();
             if (userClaims == null)

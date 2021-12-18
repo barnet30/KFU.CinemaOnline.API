@@ -15,11 +15,57 @@ namespace KFU.CinemaOnline.BL
             _cinemaRepository = cinemaRepository;
         }
 
-        public async Task<MovieEntity> UpdateRating(EstimationEntity estimation)
+        public async Task<MovieResponseModel> UpdateRating(EstimationEntity newEstimation)
         {
+            var movie = await _cinemaRepository.GetMovieEntityByIdAsync(newEstimation.MovieId);
+            if (movie == null)
+            {
+                return new MovieResponseModel
+                {
+                    Movie = null,
+                    ErrorMessage = $"Movie with id {newEstimation.MovieId} doesn't exist"
+                };
+            }
+            
             var existEstimation =
-                await _estimationRepository.GetByUserIdAndMovieId(estimation.UserId, estimation.MovieId);
-            // TODO продолжить валидацию 
+                await _estimationRepository.GetByUserIdAndMovieId(newEstimation.UserId, newEstimation.MovieId);
+
+            var newMovie = new MovieEntity();
+            // оценка не существует, значит она создаётся
+            if (existEstimation == null)
+            {
+                var rating = movie.Rating;
+                var estimationAmount = movie.EstimationAmount;
+                var newEstimationAmount = estimationAmount + 1;
+                var newRating = (rating * estimationAmount + newEstimation.Estimation) / newEstimationAmount;
+
+                movie.Rating = newRating;
+                movie.EstimationAmount = newEstimationAmount;
+                newMovie = await _cinemaRepository.UpdateMovieEntityAsync(movie);
+
+                await _estimationRepository.CreateAsync(newEstimation);
+            }
+            
+            // оценка существует, значит она изменяется
+            else
+            {
+                var rating = movie.Rating;
+                var estimationAmount = movie.EstimationAmount;
+                var newRating = (rating * estimationAmount - existEstimation.Estimation +
+                                 newEstimation.Estimation) / estimationAmount;
+
+                movie.Rating = newRating;
+
+                newMovie = await _cinemaRepository.UpdateMovieEntityAsync(movie);
+                newEstimation.Id = existEstimation.Id;
+                
+                await _estimationRepository.UpdateAsync(newEstimation);
+            }
+
+            return new MovieResponseModel
+            {
+                Movie = newMovie
+            };
         }
     }
 }

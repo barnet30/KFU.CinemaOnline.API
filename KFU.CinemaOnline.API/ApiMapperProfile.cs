@@ -1,15 +1,14 @@
-﻿using AutoMapper;
+﻿using System;
+using AutoMapper;
 using KFU.CinemaOnline.API.Contracts;
 using KFU.CinemaOnline.API.Contracts.Account;
 using KFU.CinemaOnline.API.Contracts.Cinema.Actor;
 using KFU.CinemaOnline.API.Contracts.Cinema.Director;
-using KFU.CinemaOnline.API.Contracts.Cinema.Estimation;
 using KFU.CinemaOnline.API.Contracts.Cinema.Genre;
 using KFU.CinemaOnline.API.Contracts.Cinema.Movie;
 using KFU.CinemaOnline.Common;
 using KFU.CinemaOnline.Core.Account;
 using KFU.CinemaOnline.Core.Cinema;
-using KFU.CinemaOnline.Core.Estimation;
 
 namespace KFU.CinemaOnline.API
 {
@@ -39,8 +38,10 @@ namespace KFU.CinemaOnline.API
             CreateMap<DirectorCreate, DirectorEntity>();
             CreateMap<DirectorEntity, Director>();
             CreateMap<Director, DirectorEntity>();
-            
-            CreateMap<MovieEntity, Movie>();
+
+            CreateMap<MovieEntity, Movie>()
+                .ForMember(dst => dst.Rating, opt => 
+                    opt.MapFrom(src => Math.Round(src.Rating, 2)));
             CreateMap<Movie, MovieEntity>();
             CreateMap<MovieCreate, MovieCreateModel>();
 
@@ -50,11 +51,6 @@ namespace KFU.CinemaOnline.API
             CreateMap(typeof(PagingResult<>), typeof(Page<>));
             
             CreateMap<MovieFilterRequest, MovieFilterSettings>();
-
-            CreateMap<Estimation, EstimationEntity>()
-                .ForMember(dst => dst.Estimation, opt => opt.MapFrom(src => src.Mark))
-                .ForMember(dst => dst.Id, 
-                    opt => opt.Ignore());
         }
     }
 }

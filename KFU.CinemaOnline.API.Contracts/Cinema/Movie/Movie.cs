@@ -11,6 +11,8 @@ namespace KFU.CinemaOnline.API.Contracts.Cinema.Movie
         public string Description { get; set; }
         public string MovieUrl { get; set; }
         public string ImageUrl { get; set; }
+        public double Rating { get; set; }
+        public int EstimationAmount { get; set; }
         
         public Director.Director Director { get; set; }
         public List<Actor.Actor> Actors { get; set; } = new();
