@@ -1,6 +1,7 @@
 ﻿using Autofac;
 using KFU.CinemaOnline.Core.Account;
 using KFU.CinemaOnline.Core.Cinema;
+using KFU.CinemaOnline.Core.Estimation;
 
 namespace KFU.CinemaOnline.BL
 {
@@ -10,6 +11,7 @@ namespace KFU.CinemaOnline.BL
         {
             builder.RegisterType<AccountService>().As<IAccountService>().InstancePerLifetimeScope();
             builder.RegisterType<CinemaService>().As<ICinemaService>().InstancePerLifetimeScope();
+            builder.RegisterType<EstimationService>().As<IEstimationService>().InstancePerLifetimeScope();
         }
     }
 }

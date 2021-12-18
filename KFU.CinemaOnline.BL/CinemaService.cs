@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Net;
 using System.Threading.Tasks;
 using KFU.CinemaOnline.Common;
 using KFU.CinemaOnline.Core.Cinema;
@@ -32,12 +30,12 @@ namespace KFU.CinemaOnline.BL
             return await _cinemaRepository.CreateDirectorEntityAsync(entity);
         }
 
-        public async Task<MovieCreateResponseModel> CreateMovie(MovieCreateModel entity)
+        public async Task<MovieResponseModel> CreateMovie(MovieCreateModel entity)
         {
             var director = await _cinemaRepository.GetDirectorEntityByIdAsync(entity.DirectorId);
             if (director == null)
             {
-                return new MovieCreateResponseModel
+                return new MovieResponseModel
                 {
                     Movie = null,
                     ErrorMessage = $"Director with id {entity.DirectorId} not found"
@@ -50,7 +48,7 @@ namespace KFU.CinemaOnline.BL
                 var genre = await _cinemaRepository.GetGenreEntityByIdAsync(genreId);
                 if (genre == null)
                 {
-                    return new MovieCreateResponseModel
+                    return new MovieResponseModel
                     {
                         Movie = null,
                         ErrorMessage = $"Genre with id {genreId} not found"
@@ -59,7 +57,7 @@ namespace KFU.CinemaOnline.BL
 
                 if (genres.Contains(genre))
                 {
-                    return new MovieCreateResponseModel
+                    return new MovieResponseModel
                     {
                         Movie = null,
                         ErrorMessage = "Genres can not be repeated"
@@ -75,7 +73,7 @@ namespace KFU.CinemaOnline.BL
                 var actor = await _cinemaRepository.GetActorEntityByIdAsync(actorId);
                 if (actor == null)
                 {
-                    return new MovieCreateResponseModel
+                    return new MovieResponseModel
                     {
                         Movie = null,
                         ErrorMessage = $"Actor with id {actorId} not found"
@@ -84,7 +82,7 @@ namespace KFU.CinemaOnline.BL
 
                 if (actors.Contains(actor))
                 {
-                    return new MovieCreateResponseModel
+                    return new MovieResponseModel
                     {
                         Movie = null,
                         ErrorMessage = "Actors can not be repeated"
@@ -108,7 +106,7 @@ namespace KFU.CinemaOnline.BL
             };
 
             var created = await _cinemaRepository.CreateMovieEntityAsync(newMovie);
-            return new MovieCreateResponseModel
+            return new MovieResponseModel
             {
                 Movie = created,
                 ErrorMessage = null

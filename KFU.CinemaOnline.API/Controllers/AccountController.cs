@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using KFU.CinemaOnline.API.Contracts.Account;
 using KFU.CinemaOnline.Common;
+using KFU.CinemaOnline.Core;
 using KFU.CinemaOnline.Core.Account;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
@@ -61,7 +62,9 @@ namespace KFU.CinemaOnline.API.Controllers
                     $"User with email {request.Email} already exists"));
             }
 
-            var newUser = _mapper.Map<Account>(await _accountService.AddNewUser(_mapper.Map<AccountEntity>(request)));
+            var accountEntity = _mapper.Map<AccountEntity>(request);
+            accountEntity.Roles = new[] { Role.User };
+            var newUser = _mapper.Map<Account>(await _accountService.AddNewUser(accountEntity));
 
             if (newUser == null)
             {
@@ -86,7 +89,8 @@ namespace KFU.CinemaOnline.API.Controllers
             };
             
             claims.AddRange(account.Roles.Select(role => new Claim("role", role.ToString())));
-
+            claims.Add(new Claim("id", account.Id.ToString()));
+            
             var token = new JwtSecurityToken(
                 authParams.Issuer,
                 authParams.Audience,

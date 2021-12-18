@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿using System;
+using AutoMapper;
 using KFU.CinemaOnline.API.Contracts;
 using KFU.CinemaOnline.API.Contracts.Account;
 using KFU.CinemaOnline.API.Contracts.Cinema.Actor;
@@ -37,8 +38,10 @@ namespace KFU.CinemaOnline.API
             CreateMap<DirectorCreate, DirectorEntity>();
             CreateMap<DirectorEntity, Director>();
             CreateMap<Director, DirectorEntity>();
-            
-            CreateMap<MovieEntity, Movie>();
+
+            CreateMap<MovieEntity, Movie>()
+                .ForMember(dst => dst.Rating, opt => 
+                    opt.MapFrom(src => Math.Round(src.Rating, 2)));
             CreateMap<Movie, MovieEntity>();
             CreateMap<MovieCreate, MovieCreateModel>();
 

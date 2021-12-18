@@ -1,4 +1,5 @@
 ﻿using KFU.CinemaOnline.Core.Cinema;
+using KFU.CinemaOnline.Core.Estimation;
 using KFU.CinemaOnline.Core.Sql;
 using Microsoft.EntityFrameworkCore;
 
@@ -10,7 +11,8 @@ namespace KFU.CinemaOnline.DAL.Cinema
         public DbSet<DirectorEntity> Directors { get; set; }
         public DbSet<GenreEntity> Genres { get; set; }
         public DbSet<MovieEntity> Movies { get; set; }
-        
+        public DbSet<EstimationEntity> Estimations { get; set; }
+
         public CinemaDbContext(DbContextOptions options) : base(options)
         {
         }
@@ -22,6 +24,10 @@ namespace KFU.CinemaOnline.DAL.Cinema
             modelBuilder.Entity<DirectorEntity>().HasKey(x => x.Id);
             modelBuilder.Entity<GenreEntity>().HasKey(x => x.Id);
             modelBuilder.Entity<MovieEntity>().HasKey(x => x.Id);
+            modelBuilder.Entity<EstimationEntity>(opt =>
+            {
+                opt.HasKey(x => x.Id);
+            });
         }
     }
 }

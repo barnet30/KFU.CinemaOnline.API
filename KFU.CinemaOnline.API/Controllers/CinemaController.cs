@@ -7,13 +7,15 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using AutoMapper;
 using KFU.CinemaOnline.API.Contracts;
-using KFU.CinemaOnline.API.Contracts.Cinema;
+using KFU.CinemaOnline.API.Contracts.Account;
 using KFU.CinemaOnline.API.Contracts.Cinema.Actor;
 using KFU.CinemaOnline.API.Contracts.Cinema.Director;
+using KFU.CinemaOnline.API.Contracts.Cinema.Estimation;
 using KFU.CinemaOnline.API.Contracts.Cinema.Genre;
 using KFU.CinemaOnline.API.Contracts.Cinema.Movie;
 using KFU.CinemaOnline.Common;
 using KFU.CinemaOnline.Core.Cinema;
+using KFU.CinemaOnline.Core.Estimation;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -24,14 +26,14 @@ namespace KFU.CinemaOnline.API.Controllers
     public class CinemaController : ControllerBase
     {
         private readonly ICinemaService _cinemaService;
+        private readonly IEstimationService _estimationService;
         private readonly IMapper _mapper;
-
-        private Guid UserId => Guid.Parse(User.Claims.Single(c => c.Type == ClaimTypes.NameIdentifier).Value);
         
-        public CinemaController(ICinemaService cinemaService, IMapper mapper)
+        public CinemaController(ICinemaService cinemaService, IMapper mapper, IEstimationService estimationService)
         {
             _cinemaService = cinemaService;
             _mapper = mapper;
+            _estimationService = estimationService;
         }
 
         /// <summary>
@@ -84,7 +86,6 @@ namespace KFU.CinemaOnline.API.Controllers
             
             return _mapper.Map<Movie>(result.Movie);
         }
-
         
         /// <summary>
         /// Get movie by <paramref name="id"/>
@@ -93,6 +94,7 @@ namespace KFU.CinemaOnline.API.Controllers
         /// <returns></returns>
         [HttpGet("movie/{id:int}")]
         [ProducesResponseType(typeof(ErrorModel), (int) HttpStatusCode.NotFound)]
+        //public async Task<ActionResult<Movie>> GetMovieByIdAsync([FromRoute]int id)
         public async Task<ActionResult<Movie>> GetMovieByIdAsync([FromRoute]int id)
         {
             var movie = await _cinemaService.GetMovieById(id);
@@ -445,6 +447,55 @@ namespace KFU.CinemaOnline.API.Controllers
             }
 
             return Ok();
+        }
+
+        /// <summary>
+        /// Update movie rating
+        /// </summary>
+        /// <param name="rateInput"></param>
+        /// <param name="movieId"></param>
+        /// <returns></returns>
+        [Authorize(Roles="User,Admin")]
+        [HttpPost("movie/{movieId:int}/rate")]
+        public async Task<Movie> UpdateMovieRatingAsync([FromBody] EstimationInput rateInput, [FromRoute] int movieId)
+        {
+            var account = (await ParseJwtToken()).Value;
+            var estimationEntity = new EstimationEntity
+            {
+                MovieId = movieId,
+                Estimation = rateInput.Rate,
+                UserId = account.Id
+            };
+            var movie = await _estimationService.UpdateRating(estimationEntity);
+            var mappedMovie = _mapper.Map<Movie>(movie.Movie);
+
+            return mappedMovie;
+        }
+        
+        /// <summary>
+        /// Метод для парсинга jwt токена
+        /// </summary>
+        /// <returns></returns>
+        private async Task<ActionResult<Account>> ParseJwtToken()
+        {
+            var userClaims = User?.Claims.ToList();
+            if (userClaims == null)
+            {
+                return BadRequest(ErrorResponse.GenerateError(HttpStatusCode.BadRequest, "Bad token"));
+            }
+
+            var roleClaims = userClaims.Where(x => x.Type == ClaimTypes.Role).Select(x => x.Value).ToList();
+            var roles = roleClaims
+                .Select(role => role == Role.Admin.ToString() ? Role.Admin : Role.User)
+                .ToArray();
+
+            return new Account
+            {
+                Id = int.Parse(userClaims.FirstOrDefault(x => x.Type == "id")?.Value ?? string.Empty),
+                Email = userClaims.FirstOrDefault(x => x.Type == ClaimTypes.Email)?.Value,
+                Username = userClaims.FirstOrDefault(x => x.Type == "username")?.Value,
+                Roles = roles
+            };
         }
     }
 }
