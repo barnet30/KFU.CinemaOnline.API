@@ -21,10 +21,5 @@ namespace KFU.CinemaOnline.DAL.Account
             accountModelBuilder.HasIndex(x => x.Email).IsUnique();
             accountModelBuilder.HasIndex(x => x.Username).IsUnique();
         }
-
-        public async Task<int> SaveChangesAsync()
-        {
-            return await base.SaveChangesAsync();
-        }
     }
 }

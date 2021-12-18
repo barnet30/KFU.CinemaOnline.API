@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using KFU.CinemaOnline.API.Contracts.Account;
 using KFU.CinemaOnline.Common;
+using KFU.CinemaOnline.Core;
 using KFU.CinemaOnline.Core.Account;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
@@ -36,11 +37,11 @@ namespace KFU.CinemaOnline.API.Controllers
 
             if (user == null)
             {
-                ErrorResponse.GenerateError(HttpStatusCode.BadRequest, "Bad username or password");
+                return BadRequest(ErrorResponse.GenerateError(HttpStatusCode.BadRequest, "Bad username or password"));
             }
 
             var token = GenerateJwt(_mapper.Map<Account>(user));
-            return Ok(new { account = user, access_token = token });
+            return Ok(new { account = user, token = token });
 
         }
 
@@ -50,20 +51,24 @@ namespace KFU.CinemaOnline.API.Controllers
             var userExist = _accountService.GetByUsername(request.Username);
             if (userExist != null)
             {
-                ErrorResponse.GenerateError(HttpStatusCode.BadRequest, $"User with username {request.Username} already exists");
+                return BadRequest(ErrorResponse.GenerateError(HttpStatusCode.BadRequest,
+                    $"User with username {request.Username} already exists"));
             }
 
             userExist = _accountService.GetByEmail(request.Email);
             if (userExist != null)
             {
-                ErrorResponse.GenerateError(HttpStatusCode.BadRequest, $"User with email {request.Email} already exists");
+                return BadRequest(ErrorResponse.GenerateError(HttpStatusCode.BadRequest,
+                    $"User with email {request.Email} already exists"));
             }
 
-            var newUser = _mapper.Map<Account>(await _accountService.AddNewUser(_mapper.Map<AccountEntity>(request)));
+            var accountEntity = _mapper.Map<AccountEntity>(request);
+            accountEntity.Roles = new[] { Role.User };
+            var newUser = _mapper.Map<Account>(await _accountService.AddNewUser(accountEntity));
 
             if (newUser == null)
             {
-                ErrorResponse.GenerateError(HttpStatusCode.BadRequest, "bad request");
+                return BadRequest(ErrorResponse.GenerateError(HttpStatusCode.BadRequest, "bad request"));
             }
             var token = GenerateJwt(newUser);
 
@@ -84,7 +89,8 @@ namespace KFU.CinemaOnline.API.Controllers
             };
             
             claims.AddRange(account.Roles.Select(role => new Claim("role", role.ToString())));
-
+            claims.Add(new Claim("id", account.Id.ToString()));
+            
             var token = new JwtSecurityToken(
                 authParams.Issuer,
                 authParams.Audience,

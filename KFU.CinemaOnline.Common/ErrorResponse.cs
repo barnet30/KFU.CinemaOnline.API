@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using System;
+using System.Net;
 using System.Net.Http;
 using Microsoft.Rest;
 
@@ -6,13 +7,13 @@ namespace KFU.CinemaOnline.Common
 {
     public static class ErrorResponse
     {
-        public static void GenerateError(HttpStatusCode statusCode, string message)
-        {
-            throw new HttpOperationException()
+        public static ErrorModel GenerateError(HttpStatusCode statusCode, string message) => 
+            new ErrorModel
             {
-                Response = new HttpResponseMessageWrapper(new HttpResponseMessage(statusCode), message)
-                    {Content = message}
-            };        
-        }
+                Error = statusCode.ToString(),
+                StatusCode = (int)statusCode,
+                Message = message,
+                Time = DateTime.Now
+            };
     }
 }

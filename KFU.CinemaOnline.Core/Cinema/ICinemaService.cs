@@ -1,19 +1,20 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using KFU.CinemaOnline.Common;
 
 namespace KFU.CinemaOnline.Core.Cinema
 {
     public interface ICinemaService
     {
-        Task CreateGenre(GenreEntity entity);
-        Task CreateActor(ActorEntity entity);
-        Task CreateDirector(DirectorEntity entity);
-        Task CreateMovie(MovieEntity entity);
+        Task<GenreEntity> CreateGenre(GenreEntity entity);
+        Task<ActorEntity> CreateActor(ActorEntity entity);
+        Task<DirectorEntity> CreateDirector(DirectorEntity entity);
+        Task<MovieResponseModel> CreateMovie(MovieCreateModel entity);
 
         Task<List<GenreEntity>> GetAllGenres();
         Task<List<ActorEntity>> GetAllActors();
         Task<List<DirectorEntity>> GetAllDirectors();
-        Task<List<MovieEntity>> GetAllMovies();
+        Task<PagingResult<MovieEntity>> GetFilteredMovies(MovieFilterSettings filter);
 
 
         Task<GenreEntity> GetGenreById(int id);
@@ -32,6 +33,5 @@ namespace KFU.CinemaOnline.Core.Cinema
         Task DeleteDirectorById(int id);
         Task DeleteActorById(int id);
         Task DeleteMovieById(int id);
-
     }
 }

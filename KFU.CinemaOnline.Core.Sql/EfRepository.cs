@@ -19,7 +19,7 @@ namespace KFU.CinemaOnline.Core.Sql
             return _context.Set<T>();
         }
 
-        public async Task<T> GetByIdAsync(Guid id)
+        public async Task<T> GetByIdAsync(int id)
         {
             return await _context.Set<T>().FindAsync(id).ConfigureAwait(false);
         }
@@ -40,7 +40,7 @@ namespace KFU.CinemaOnline.Core.Sql
             return entity;
         }
 
-        public async Task DeleteByIdAsync(Guid id)
+        public async Task DeleteByIdAsync(int id)
         {
             var entity = await GetByIdAsync(id);
             if (entity != null)

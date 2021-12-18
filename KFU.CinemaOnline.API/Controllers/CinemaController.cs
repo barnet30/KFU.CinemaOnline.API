@@ -1,17 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Net;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using AutoMapper;
-using KFU.CinemaOnline.API.Contracts.Cinema;
+using KFU.CinemaOnline.API.Contracts;
+using KFU.CinemaOnline.API.Contracts.Account;
 using KFU.CinemaOnline.API.Contracts.Cinema.Actor;
 using KFU.CinemaOnline.API.Contracts.Cinema.Director;
+using KFU.CinemaOnline.API.Contracts.Cinema.Estimation;
 using KFU.CinemaOnline.API.Contracts.Cinema.Genre;
 using KFU.CinemaOnline.API.Contracts.Cinema.Movie;
 using KFU.CinemaOnline.Common;
 using KFU.CinemaOnline.Core.Cinema;
+using KFU.CinemaOnline.Core.Estimation;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -22,14 +26,14 @@ namespace KFU.CinemaOnline.API.Controllers
     public class CinemaController : ControllerBase
     {
         private readonly ICinemaService _cinemaService;
+        private readonly IEstimationService _estimationService;
         private readonly IMapper _mapper;
-
-        private Guid UserId => Guid.Parse(User.Claims.Single(c => c.Type == ClaimTypes.NameIdentifier).Value);
         
-        public CinemaController(ICinemaService cinemaService, IMapper mapper)
+        public CinemaController(ICinemaService cinemaService, IMapper mapper, IEstimationService estimationService)
         {
             _cinemaService = cinemaService;
             _mapper = mapper;
+            _estimationService = estimationService;
         }
 
         /// <summary>
@@ -37,10 +41,11 @@ namespace KFU.CinemaOnline.API.Controllers
         /// </summary>
         /// <param name="genre"></param>
         [HttpPost("genre")]
-        [Authorize(Roles = "Admin")]
-        public async Task CreateGenreAsync([FromBody] GenreCreate genre)
+        //[Authorize(Roles = "Admin")]
+        public async Task<Genre> CreateGenreAsync([FromBody] GenreCreate genre)
         {
-            await _cinemaService.CreateGenre(_mapper.Map<GenreEntity>(genre));
+            var result = await _cinemaService.CreateGenre(_mapper.Map<GenreEntity>(genre));
+            return _mapper.Map<Genre>(result);
         }
 
         /// <summary>
@@ -48,9 +53,10 @@ namespace KFU.CinemaOnline.API.Controllers
         /// </summary>
         /// <param name="newActor"></param>
         [HttpPost("actor")]
-        public async Task CreateActorAsync([FromBody] ActorCreate newActor)
+        public async Task<Actor> CreateActorAsync([FromBody] ActorCreate newActor)
         {
-            await _cinemaService.CreateActor(_mapper.Map<ActorEntity>(newActor));
+            var result = await _cinemaService.CreateActor(_mapper.Map<ActorEntity>(newActor));
+            return _mapper.Map<Actor>(result);
         }
 
         /// <summary>
@@ -58,9 +64,10 @@ namespace KFU.CinemaOnline.API.Controllers
         /// </summary>
         /// <param name="newDirector"></param>
         [HttpPost("director")]
-        public async Task CreateDirectorAsync([FromBody] DirectorCreate newDirector)
+        public async Task<Director> CreateDirectorAsync([FromBody] DirectorCreate newDirector)
         {
-            await _cinemaService.CreateDirector(_mapper.Map<DirectorEntity>(newDirector));
+            var result = await _cinemaService.CreateDirector(_mapper.Map<DirectorEntity>(newDirector));
+            return _mapper.Map<Director>(result);
         }
         
         /// <summary>
@@ -68,65 +75,17 @@ namespace KFU.CinemaOnline.API.Controllers
         /// </summary>
         /// <param name="newMovie"></param>
         [HttpPost("movie")]
-        public async Task CreateMovieAsync([FromBody] MovieCreate newMovie)
+        public async Task<ActionResult<Movie>> CreateMovieAsync([FromBody] MovieCreate newMovie)
         {
-            var director = await _cinemaService.GetDirectorById(newMovie.DirectorId);
-            if (director == null)
+            var result = await _cinemaService.CreateMovie(_mapper.Map<MovieCreateModel>(newMovie));
+
+            if (result.Movie == null)
             {
-                ErrorResponse.GenerateError(HttpStatusCode.NotFound,
-                    $"Director with id {newMovie.DirectorId} not found");
+                return BadRequest(ErrorResponse.GenerateError(HttpStatusCode.BadRequest, result.ErrorMessage));
             }
             
-            var genres = new List<GenreEntity>();
-            foreach (var genreId in newMovie.Genres)
-            {
-                var genre = await _cinemaService.GetGenreById(genreId);
-                if (genre == null)
-                {
-                    ErrorResponse.GenerateError(HttpStatusCode.NotFound, $"Genre with id {genreId} not found");
-                }
-
-                if (genres.Contains(genre))
-                {
-                    ErrorResponse.GenerateError(HttpStatusCode.BadRequest, "Genres can not be repeated");
-                }
-                
-                genres.Add(genre);
-            }
-
-            var actors = new List<ActorEntity>();
-            foreach (var actorId in newMovie.Actors)
-            {
-                var actor = await _cinemaService.GetActorById(actorId);
-                if (actor == null)
-                {
-                    ErrorResponse.GenerateError(HttpStatusCode.NotFound, $"Actor with id {actorId} not found");
-                }
-
-                if (actors.Contains(actor))
-                {
-                    ErrorResponse.GenerateError(HttpStatusCode.BadRequest, "Actors can not be repeated");
-                }
-
-                actors.Add(actor);
-            }
-            
-            var createdMovie = new MovieEntity
-            {
-                Name = newMovie.Name,
-                Year = newMovie.Year,
-                Country = newMovie.Country,
-                Description = newMovie.Description,
-                ImageUrl = newMovie.ImageUrl,
-                MovieUrl = newMovie.MovieUrl,
-                Director = director,
-                Genres = genres,
-                Actors = actors
-            };
-
-            await _cinemaService.CreateMovie(createdMovie);
+            return _mapper.Map<Movie>(result.Movie);
         }
-
         
         /// <summary>
         /// Get movie by <paramref name="id"/>
@@ -135,14 +94,15 @@ namespace KFU.CinemaOnline.API.Controllers
         /// <returns></returns>
         [HttpGet("movie/{id:int}")]
         [ProducesResponseType(typeof(ErrorModel), (int) HttpStatusCode.NotFound)]
-        public async Task<Movie> GetMovieByIdAsync([FromRoute]int id)
+        //public async Task<ActionResult<Movie>> GetMovieByIdAsync([FromRoute]int id)
+        public async Task<ActionResult<Movie>> GetMovieByIdAsync([FromRoute]int id)
         {
             var movie = await _cinemaService.GetMovieById(id);
 
             if (movie == null)
             {
-                ErrorResponse.GenerateError(HttpStatusCode.NotFound,$"Movie with id {id} not found");
-                //return NotFound($"Movie with id {id} not found");
+                return NotFound(ErrorResponse.GenerateError(HttpStatusCode.NotFound, 
+                    $"Movie with id {id} not found"));
             }
 
             return _mapper.Map<Movie>(movie);
@@ -160,7 +120,7 @@ namespace KFU.CinemaOnline.API.Controllers
             
             if (actor == null)
             {
-                return NotFound($"Actor with id {id} not found");
+                return NotFound(ErrorResponse.GenerateError(HttpStatusCode.NotFound, $"Actor with id {id} not found"));
             }
 
             return _mapper.Map<Actor>(actor);
@@ -178,7 +138,8 @@ namespace KFU.CinemaOnline.API.Controllers
 
             if (director == null)
             {
-                return NotFound($"Director with id {id} not found");
+                return NotFound(
+                    ErrorResponse.GenerateError(HttpStatusCode.NotFound, $"Director with id {id} not found"));
             }
 
             return _mapper.Map<Director>(director);
@@ -196,7 +157,8 @@ namespace KFU.CinemaOnline.API.Controllers
 
             if (genre == null)
             {
-                return NotFound($"Genre with id {id} not found");
+                return NotFound(ErrorResponse.GenerateError(HttpStatusCode.NotFound, 
+                    $"Genre with id {id} not found"));
             }
 
             return _mapper.Map<Genre>(genre);
@@ -213,7 +175,8 @@ namespace KFU.CinemaOnline.API.Controllers
             var updated = await _cinemaService.UpdateActor(_mapper.Map<ActorEntity>(newActor));
             if (updated == null)
             {
-                return NotFound($"Actor with id {newActor.Id} not found");
+                return NotFound(ErrorResponse.GenerateError(HttpStatusCode.NotFound,
+                    $"Actor with id {newActor.Id} not found"));
             }
 
             return _mapper.Map<Actor>(updated);
@@ -230,7 +193,8 @@ namespace KFU.CinemaOnline.API.Controllers
             var updated = await _cinemaService.UpdateDirector(_mapper.Map<DirectorEntity>(newDirector));
             if (updated == null)
             {
-                return NotFound($"Director with id {newDirector.Id} not found");
+                return NotFound(ErrorResponse.GenerateError(HttpStatusCode.NotFound,
+                    $"Director with id {newDirector.Id} not found"));
             }
 
             return _mapper.Map<Director>(updated);
@@ -247,7 +211,8 @@ namespace KFU.CinemaOnline.API.Controllers
             var updated = await _cinemaService.UpdateGenre(_mapper.Map<GenreEntity>(newGenre));
             if (updated == null)
             {
-                return NotFound($"Genre with id {newGenre.Id} not found");
+                return NotFound(ErrorResponse.GenerateError(HttpStatusCode.NotFound,
+                    $"Genre with id {newGenre.Id} not found"));
             }
 
             return _mapper.Map<Genre>(updated);
@@ -264,7 +229,8 @@ namespace KFU.CinemaOnline.API.Controllers
             var movie = await _cinemaService.GetMovieById(newMovie.Id);
             if (movie == null)
             {
-                return NotFound($"Movie with id {newMovie.Id} not found");
+                return NotFound(ErrorResponse.GenerateError(HttpStatusCode.NotFound,
+                    $"Movie with id {newMovie.Id} not found"));
             }
 
              
@@ -276,12 +242,14 @@ namespace KFU.CinemaOnline.API.Controllers
                 var genre = await _cinemaService.GetGenreById(genreId);
                 if (genre == null)
                 {
-                    return NotFound($"Genre with id {genreId} not found");
+                    return NotFound(ErrorResponse.GenerateError(HttpStatusCode.NotFound,
+                        $"Genre with id {genreId} not found"));
                 }
 
                 if (updatedGenresList.Contains(genre))
                 {
-                    return BadRequest($"Genre {genre.Name} already added");
+                    return BadRequest(ErrorResponse.GenerateError(HttpStatusCode.BadRequest,
+                        $"Genre {genre.Name} already added"));
                 }
 
                 updatedGenresList.Add(genre);
@@ -292,12 +260,14 @@ namespace KFU.CinemaOnline.API.Controllers
                 var actor = await _cinemaService.GetActorById(actorId);
                 if (actor == null)
                 {
-                    return NotFound($"Actor with id {actorId} not found");
+                    return NotFound(ErrorResponse.GenerateError(HttpStatusCode.NotFound,
+                        $"Actor with id {actorId} not found"));
                 }
 
                 if (updatedActorsList.Contains(actor))
                 {
-                    return BadRequest($"Actor {actor.Name} already added");
+                    return BadRequest(ErrorResponse.GenerateError(HttpStatusCode.BadRequest,
+                        $"Actor {actor.Name} already added"));
                 }
 
                 updatedActorsList.Add(actor);
@@ -306,7 +276,8 @@ namespace KFU.CinemaOnline.API.Controllers
             var newDirector = await _cinemaService.GetDirectorById(newMovie.DirectorId);
             if (newDirector == null)
             {
-                return NotFound($"Director with id {newMovie.DirectorId} not found");
+                return NotFound(ErrorResponse.GenerateError(HttpStatusCode.NotFound,
+                    $"Director with id {newMovie.DirectorId} not found"));
             }
 
             movie = new MovieEntity
@@ -362,10 +333,20 @@ namespace KFU.CinemaOnline.API.Controllers
         /// Get list of all movies
         /// </summary>
         /// <returns></returns>
-        [HttpGet("movies")]
-        public async Task<List<Movie>> GetAllMoviesAsync()
+        [HttpPost("movies")]
+        public async Task<Page<Movie>> GetFilteredMovieListAsync([FromBody, Required] MovieFilterRequest request)
         {
-            return _mapper.Map<List<Movie>>(await _cinemaService.GetAllMovies());
+            if (request.Limit == 0)
+            {
+                request.Limit = 10;
+            }
+
+            // TODO добаить фильтр по жанрам
+            
+            var movieList = await _cinemaService
+                .GetFilteredMovies(_mapper.Map<MovieFilterSettings>(request));
+            
+            return _mapper.Map<Page<Movie>>(movieList);
         }
 
         /// <summary>
@@ -380,13 +361,14 @@ namespace KFU.CinemaOnline.API.Controllers
             {
                 if (await _cinemaService.GetGenreById(id) == null)
                 {
-                    return NotFound($"Genre with id {id} not found");
+                    return NotFound(ErrorResponse.GenerateError(HttpStatusCode.NotFound,
+                        $"Genre with id {id} not found"));
                 }
                 await _cinemaService.DeleteGenreById(id);
             }
             catch (Exception e)
             {
-                ErrorResponse.GenerateError(HttpStatusCode.InternalServerError, e.Message);
+                return BadRequest(ErrorResponse.GenerateError(HttpStatusCode.InternalServerError, e.Message));
             }
 
             return Ok();
@@ -404,13 +386,14 @@ namespace KFU.CinemaOnline.API.Controllers
             {
                 if (await _cinemaService.GetActorById(id) == null)
                 {
-                    return NotFound($"Actor with id {id} not found");
+                    return NotFound(ErrorResponse.GenerateError(HttpStatusCode.NotFound,
+                        $"Actor with id {id} not found"));
                 }
                 await _cinemaService.DeleteActorById(id);
             }
             catch (Exception e)
             {
-                ErrorResponse.GenerateError(HttpStatusCode.InternalServerError, e.Message);
+                return BadRequest(ErrorResponse.GenerateError(HttpStatusCode.InternalServerError, e.Message));
             }
 
             return Ok();
@@ -428,13 +411,14 @@ namespace KFU.CinemaOnline.API.Controllers
             {
                 if (await _cinemaService.GetDirectorById(id) == null)
                 {
-                    return NotFound($"Director with id {id} not found");
+                    return NotFound(ErrorResponse.GenerateError(HttpStatusCode.NotFound,
+                        $"Director with id {id} not found"));
                 }
                 await _cinemaService.DeleteDirectorById(id);
             }
             catch (Exception e)
             {
-                ErrorResponse.GenerateError(HttpStatusCode.InternalServerError, e.Message);
+                return BadRequest(ErrorResponse.GenerateError(HttpStatusCode.InternalServerError, e.Message));
             }
 
             return Ok();
@@ -452,16 +436,66 @@ namespace KFU.CinemaOnline.API.Controllers
             {
                 if (await _cinemaService.GetMovieById(id) == null)
                 {
-                    return NotFound($"Movie with id {id} not found");
+                    return NotFound(ErrorResponse.GenerateError(HttpStatusCode.NotFound,
+                        $"Movie with id {id} not found"));
                 }
                 await _cinemaService.DeleteMovieById(id);
             }
             catch (Exception e)
             {
-                ErrorResponse.GenerateError(HttpStatusCode.InternalServerError, e.Message);
+                return BadRequest(ErrorResponse.GenerateError(HttpStatusCode.InternalServerError, e.Message));
             }
 
             return Ok();
+        }
+
+        /// <summary>
+        /// Update movie rating
+        /// </summary>
+        /// <param name="rateInput"></param>
+        /// <param name="movieId"></param>
+        /// <returns></returns>
+        [Authorize(Roles="User,Admin")]
+        [HttpPost("movie/{movieId:int}/rate")]
+        public async Task<Movie> UpdateMovieRatingAsync([FromBody] EstimationInput rateInput, [FromRoute] int movieId)
+        {
+            var account = (await ParseJwtToken()).Value;
+            var estimationEntity = new EstimationEntity
+            {
+                MovieId = movieId,
+                Estimation = rateInput.Rate,
+                UserId = account.Id
+            };
+            var movie = await _estimationService.UpdateRating(estimationEntity);
+            var mappedMovie = _mapper.Map<Movie>(movie.Movie);
+
+            return mappedMovie;
+        }
+        
+        /// <summary>
+        /// Метод для парсинга jwt токена
+        /// </summary>
+        /// <returns></returns>
+        private async Task<ActionResult<Account>> ParseJwtToken()
+        {
+            var userClaims = User?.Claims.ToList();
+            if (userClaims == null)
+            {
+                return BadRequest(ErrorResponse.GenerateError(HttpStatusCode.BadRequest, "Bad token"));
+            }
+
+            var roleClaims = userClaims.Where(x => x.Type == ClaimTypes.Role).Select(x => x.Value).ToList();
+            var roles = roleClaims
+                .Select(role => role == Role.Admin.ToString() ? Role.Admin : Role.User)
+                .ToArray();
+
+            return new Account
+            {
+                Id = int.Parse(userClaims.FirstOrDefault(x => x.Type == "id")?.Value ?? string.Empty),
+                Email = userClaims.FirstOrDefault(x => x.Type == ClaimTypes.Email)?.Value,
+                Username = userClaims.FirstOrDefault(x => x.Type == "username")?.Value,
+                Roles = roles
+            };
         }
     }
 }
