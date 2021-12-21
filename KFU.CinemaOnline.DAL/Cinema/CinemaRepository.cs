@@ -204,11 +204,11 @@ namespace KFU.CinemaOnline.DAL.Cinema
                 .And(filterSettings.Country, x => x.Country.Contains(filterSettings.Country))
                 .And(filterSettings.Name, x => x.Name.Contains(filterSettings.Name))
                 .And(filterSettings.YearMax, x => x.Year <= filterSettings.YearMax)
-                .And(filterSettings.YearMin, x => x.Year >= filterSettings.YearMin);
-
+                .And(filterSettings.YearMin, x => x.Year >= filterSettings.YearMin)
+                .And(filterSettings.Genres, x => x.Genres.Any(genre => filterSettings.Genres.Contains(genre.Id)));
             var query = table.Where(predicate);
 
-            var sortColumns = ResolveMovieSortColumn(filterSettings.SortColumn);
+            var sortColumns = filterSettings.SortColumn != null ? ResolveMovieSortColumn(filterSettings.SortColumn) : null;
 
          return await QueryItems(query, filterSettings, sortColumns);
         }
@@ -217,7 +217,7 @@ namespace KFU.CinemaOnline.DAL.Cinema
             sortColumn.ToLowerInvariant() switch
             {
                 "year" => x => x.Year,
-                "Name" => x => x.Name,
+                "name" => x => x.Name,
                 "county" => x => x.Country,
                 _ => null
             };

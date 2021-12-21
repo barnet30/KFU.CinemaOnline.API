@@ -85,11 +85,11 @@ namespace KFU.CinemaOnline.API.Controllers
             var claims = new List<Claim>()
             {
                 new Claim("email", account.Email),
-                new Claim("username", account.Username)
+                new Claim("username", account.Username),
+                new Claim("id", account.Id.ToString())
             };
             
             claims.AddRange(account.Roles.Select(role => new Claim("role", role.ToString())));
-            claims.Add(new Claim("id", account.Id.ToString()));
             
             var token = new JwtSecurityToken(
                 authParams.Issuer,

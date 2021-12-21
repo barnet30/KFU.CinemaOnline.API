@@ -44,6 +44,7 @@ namespace KFU.CinemaOnline.API
                     opt.MapFrom(src => Math.Round(src.Rating, 2)));
             CreateMap<Movie, MovieEntity>();
             CreateMap<MovieCreate, MovieCreateModel>();
+            CreateMap<MovieUpdate, MovieUpdateModel>();
 
             CreateMap<PagingParameters, PagingSettings>().ReverseMap();
             CreateMap<PagingSortParameters, PagingSortSettings>().ReverseMap();

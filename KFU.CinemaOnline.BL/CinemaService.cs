@@ -178,13 +178,102 @@ namespace KFU.CinemaOnline.BL
             }
             return await _cinemaRepository.UpdateDirectorEntityAsync(directorEntity);        }
 
-        public async Task<MovieEntity> UpdateMovie(MovieEntity movieEntity)
+        public async Task<MovieResponseModel> UpdateMovie(MovieUpdateModel updateEntity)
         {
-            if (await _cinemaRepository.GetMovieEntityByIdAsync(movieEntity.Id) == null)
+            var movie = await _cinemaRepository.GetMovieEntityByIdAsync(updateEntity.Id);
+            if (movie == null)
             {
-                return null;
+                return new MovieResponseModel
+                {
+                    Movie = null,
+                    ErrorMessage = $"Movie with id {updateEntity.Id} not found"
+                };
             }
-            return await _cinemaRepository.UpdateMovieEntityAsync(movieEntity);        }
+
+             
+            var updatedGenresList = new List<GenreEntity>();
+            var updatedActorsList = new List<ActorEntity>();
+
+            foreach (var genreId in updateEntity.Genres)
+            {
+                var genre = await _cinemaRepository.GetGenreEntityByIdAsync(genreId);
+                if (genre == null)
+                {
+                    return new MovieResponseModel
+                    {
+                        Movie = null,
+                        ErrorMessage = $"Genre with id {genreId} not found"
+                    };
+                }
+
+                if (updatedGenresList.Contains(genre))
+                {
+                    return new MovieResponseModel
+                    {
+                        Movie = null,
+                        ErrorMessage = $"Genre {genre.Name} already added"
+                    };
+                }
+
+                updatedGenresList.Add(genre);
+            }
+            
+            foreach (var actorId in updateEntity.Actors)
+            {
+                var actor = await _cinemaRepository.GetActorEntityByIdAsync(actorId);
+                if (actor == null)
+                {
+                    return new MovieResponseModel
+                    {
+                        Movie = null,
+                        ErrorMessage = $"Actor with id {actorId} not found"
+                    };
+                }
+
+                if (updatedActorsList.Contains(actor))
+                {
+                    return new MovieResponseModel
+                    {
+                        Movie = null,
+                        ErrorMessage = $"Actor {actor.Name} already added"
+                    };
+                }
+
+                updatedActorsList.Add(actor);
+            }
+
+            var newDirector = await _cinemaRepository.GetDirectorEntityByIdAsync(updateEntity.DirectorId);
+            if (newDirector == null)
+            {
+                return new MovieResponseModel
+                {
+                    Movie = null,
+                    ErrorMessage = $"Director with id {updateEntity.DirectorId} not found"
+                };
+            }
+
+            movie = new MovieEntity
+            {
+                Id = updateEntity.Id,
+                Name = updateEntity.Name,
+                Country = updateEntity.Country,
+                Year = updateEntity.Year,
+                Description = updateEntity.Description,
+                ImageUrl = updateEntity.ImageUrl,
+                MovieUrl = updateEntity.MovieUrl,
+                Director = newDirector,
+                Actors = updatedActorsList,
+                Genres = updatedGenresList
+            };
+            
+            var updated = await _cinemaRepository.UpdateMovieEntityAsync(movie);
+
+            return new MovieResponseModel
+            {
+                Movie = updated,
+                ErrorMessage = null
+            };
+        }
 
         public async Task DeleteGenreById(int id)
         {
@@ -206,21 +295,7 @@ namespace KFU.CinemaOnline.BL
             await _cinemaRepository.DeleteMovieEntityByIdAsync(id);
         }
 
-        public async Task<PagingResult<MovieEntity>> QueryMovieItems(MovieFilterSettings pagingSettings)
-        {
-            throw new NotImplementedException();
-            /*if (pagingSettings == null)
-            {
-                var items = await _cinemaRepository.GetAllMovieEntitiesAsync();
-                return new PagingResult<MovieEntity>
-                {
-                    Total = items.Count,
-                    Items = items.Take(PagingSettings.DefaultLimit).ToArray()
-                };
-            }
-            */
-        }
-        
+  
         
     }
 }

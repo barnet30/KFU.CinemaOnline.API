@@ -1,4 +1,6 @@
-﻿namespace KFU.CinemaOnline.API.Contracts.Cinema.Movie
+﻿using System.Collections.Generic;
+
+namespace KFU.CinemaOnline.API.Contracts.Cinema.Movie
 {
     /// <summary>
     /// Filter parameters for movie list
@@ -9,5 +11,6 @@
         public int? YearMin { get; set; }
         public string Name { get; set; }
         public string Country { get; set; }
+        public List<int> Genres { get; set; }
     }
 }
