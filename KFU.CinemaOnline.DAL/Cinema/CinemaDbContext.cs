@@ -24,10 +24,7 @@ namespace KFU.CinemaOnline.DAL.Cinema
             modelBuilder.Entity<DirectorEntity>().HasKey(x => x.Id);
             modelBuilder.Entity<GenreEntity>().HasKey(x => x.Id);
             modelBuilder.Entity<MovieEntity>().HasKey(x => x.Id);
-            modelBuilder.Entity<EstimationEntity>(opt =>
-            {
-                opt.HasKey(x => x.Id);
-            });
+            modelBuilder.Entity<EstimationEntity>().HasKey(x => x.Id);
         }
     }
 }

@@ -30,7 +30,7 @@ namespace KFU.CinemaOnline.BL
             var existEstimation =
                 await _estimationRepository.GetByUserIdAndMovieId(newEstimation.UserId, newEstimation.MovieId);
 
-            var newMovie = new MovieEntity();
+            MovieEntity newMovie;
             // оценка не существует, значит она создаётся
             if (existEstimation == null)
             {

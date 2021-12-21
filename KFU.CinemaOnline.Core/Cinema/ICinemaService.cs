@@ -26,7 +26,7 @@ namespace KFU.CinemaOnline.Core.Cinema
         Task<ActorEntity> UpdateActor(ActorEntity actorEntity);
         Task<GenreEntity> UpdateGenre(GenreEntity genreEntity);
         Task<DirectorEntity> UpdateDirector(DirectorEntity directorEntity);
-        Task<MovieEntity> UpdateMovie(MovieEntity actorEntity);
+        Task<MovieResponseModel> UpdateMovie(MovieUpdateModel movieUpdateModel);
 
 
         Task DeleteGenreById(int id);
