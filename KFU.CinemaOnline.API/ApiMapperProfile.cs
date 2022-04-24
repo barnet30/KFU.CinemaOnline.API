@@ -6,9 +6,11 @@ using KFU.CinemaOnline.API.Contracts.Cinema.Actor;
 using KFU.CinemaOnline.API.Contracts.Cinema.Director;
 using KFU.CinemaOnline.API.Contracts.Cinema.Genre;
 using KFU.CinemaOnline.API.Contracts.Cinema.Movie;
+using KFU.CinemaOnline.API.Contracts.Cinema.RefBook;
 using KFU.CinemaOnline.Common;
 using KFU.CinemaOnline.Core.Account;
 using KFU.CinemaOnline.Core.Cinema;
+using KFU.CinemaOnline.Core.RefBook;
 
 namespace KFU.CinemaOnline.API
 {
@@ -45,6 +47,9 @@ namespace KFU.CinemaOnline.API
             CreateMap<Movie, MovieEntity>();
             CreateMap<MovieCreate, MovieCreateModel>();
             CreateMap<MovieUpdate, MovieUpdateModel>();
+            CreateMap<MovieEntity, MovieItem>()
+                .ForMember(dst => dst.Rating, opt => 
+                    opt.MapFrom(src => Math.Round(src.Rating, 2)));
 
             CreateMap<PagingParameters, PagingSettings>().ReverseMap();
             CreateMap<PagingSortParameters, PagingSortSettings>().ReverseMap();
@@ -52,6 +57,8 @@ namespace KFU.CinemaOnline.API
             CreateMap(typeof(PagingResult<>), typeof(Page<>));
             
             CreateMap<MovieFilterRequest, MovieFilterSettings>();
+
+            CreateMap<CountryRefEntity, CountryRef>().ReverseMap();
         }
     }
 }

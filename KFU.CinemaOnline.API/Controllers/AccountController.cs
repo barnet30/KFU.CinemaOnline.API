@@ -25,7 +25,7 @@ namespace KFU.CinemaOnline.API.Controllers
         private readonly IMapper _mapper;
         public AccountController(IOptions<AuthOptions> authOptions, IAccountService accountService, IMapper mapper)
         {
-            this._authOptions = authOptions;
+            _authOptions = authOptions;
             _accountService = accountService;
             _mapper = mapper;
         }
@@ -72,7 +72,7 @@ namespace KFU.CinemaOnline.API.Controllers
             }
             var token = GenerateJwt(newUser);
 
-            return Ok(new { account = newUser, access_token = token });
+            return Ok(new { account = newUser, token = token });
         }
 
         private string GenerateJwt(Account account)
