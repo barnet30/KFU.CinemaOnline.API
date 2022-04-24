@@ -1,5 +1,6 @@
 ﻿using KFU.CinemaOnline.Core.Cinema;
 using KFU.CinemaOnline.Core.Estimation;
+using KFU.CinemaOnline.Core.RefBook;
 using KFU.CinemaOnline.Core.Sql;
 using Microsoft.EntityFrameworkCore;
 
@@ -12,6 +13,7 @@ namespace KFU.CinemaOnline.DAL.Cinema
         public DbSet<GenreEntity> Genres { get; set; }
         public DbSet<MovieEntity> Movies { get; set; }
         public DbSet<EstimationEntity> Estimations { get; set; }
+        public DbSet<CountryRefEntity> CountryRefEntities { get; set; }
 
         public CinemaDbContext(DbContextOptions options) : base(options)
         {
@@ -25,6 +27,7 @@ namespace KFU.CinemaOnline.DAL.Cinema
             modelBuilder.Entity<GenreEntity>().HasKey(x => x.Id);
             modelBuilder.Entity<MovieEntity>().HasKey(x => x.Id);
             modelBuilder.Entity<EstimationEntity>().HasKey(x => x.Id);
+            modelBuilder.Entity<CountryRefEntity>().HasKey(x => x.Id);
         }
     }
 }

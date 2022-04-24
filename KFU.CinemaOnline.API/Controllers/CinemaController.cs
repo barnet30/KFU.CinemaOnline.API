@@ -275,7 +275,7 @@ namespace KFU.CinemaOnline.API.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpPost("movies")]
-        public async Task<Page<Movie>> GetFilteredMovieListAsync([FromBody, Required] MovieFilterRequest request)
+        public async Task<Page<MovieItem>> GetFilteredMovieListAsync([FromBody, Required] MovieFilterRequest request)
         {
             if (request.Limit == 0)
             {
@@ -285,7 +285,7 @@ namespace KFU.CinemaOnline.API.Controllers
             var movieList = await _cinemaService
                 .GetFilteredMovies(_mapper.Map<MovieFilterSettings>(request));
             
-            return _mapper.Map<Page<Movie>>(movieList);
+            return _mapper.Map<Page<MovieItem>>(movieList);
         }
 
         /// <summary>

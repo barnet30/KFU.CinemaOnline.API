@@ -219,6 +219,7 @@ namespace KFU.CinemaOnline.DAL.Cinema
                 "year" => x => x.Year,
                 "name" => x => x.Name,
                 "county" => x => x.Country,
+                "rating" => x => x.Rating,
                 _ => null
             };
 

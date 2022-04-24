@@ -294,8 +294,5 @@ namespace KFU.CinemaOnline.BL
         {
             await _cinemaRepository.DeleteMovieEntityByIdAsync(id);
         }
-
-  
-        
     }
 }
