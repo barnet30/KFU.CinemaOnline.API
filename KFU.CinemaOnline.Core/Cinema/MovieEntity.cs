@@ -6,6 +6,7 @@ namespace KFU.CinemaOnline.Core.Cinema
     public class MovieEntity : BaseEntity
     {
         public string Name { get; set; } // Наименование фильма
+        public int CountryId { get; set; } // Идентификатор страны фильма
         public string Country { get; set; } // Страна фильма
         public int Year { get; set; } // Год выхода фильма
         public string Description { get; set; } // Описание фильма
