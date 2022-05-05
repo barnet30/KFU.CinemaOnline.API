@@ -201,10 +201,10 @@ namespace KFU.CinemaOnline.DAL.Cinema
             var predicate = PredicateBuilder.New<MovieEntity>(true);
 
             predicate
-                .And(filterSettings.Country, x => x.Country.Contains(filterSettings.Country))
+                .And(filterSettings.CountryId, x => x.CountryId == filterSettings.CountryId)
                 .And(filterSettings.Name, x => x.Name.Contains(filterSettings.Name))
-                .And(filterSettings.YearMax, x => x.Year <= filterSettings.YearMax)
-                .And(filterSettings.YearMin, x => x.Year >= filterSettings.YearMin)
+                .And(filterSettings.YearTo, x => x.Year <= filterSettings.YearTo)
+                .And(filterSettings.YearFrom, x => x.Year >= filterSettings.YearFrom)
                 .And(filterSettings.Genres, x => x.Genres.Any(genre => filterSettings.Genres.Contains(genre.Id)));
             var query = table.Where(predicate);
 
