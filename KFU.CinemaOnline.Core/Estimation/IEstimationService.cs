@@ -6,5 +6,6 @@ namespace KFU.CinemaOnline.Core.Estimation
     public interface IEstimationService
     {
         Task<MovieResponseModel> UpdateRating(EstimationEntity estimation);
+        Task<int?> GetUserEstimation(int userId, int movieId);
     }
 }

@@ -67,5 +67,12 @@ namespace KFU.CinemaOnline.BL
                 Movie = newMovie
             };
         }
+
+        public async Task<int?> GetUserEstimation(int userId, int movieId)
+        {
+            var estimation = await _estimationRepository.GetByUserIdAndMovieId(userId, movieId);
+
+            return estimation?.Estimation;
+        }
     }
 }

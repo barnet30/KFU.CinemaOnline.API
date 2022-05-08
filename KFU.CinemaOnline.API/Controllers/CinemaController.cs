@@ -414,6 +414,21 @@ namespace KFU.CinemaOnline.API.Controllers
 
             return mappedMovie;
         }
+
+        /// <summary>
+        /// Получить оценку пользователя к фильму.
+        /// </summary>
+        /// <param name="movieId">Идентификатор фильма.</param>
+        /// <returns></returns>
+        [HttpGet("rate/{movieId:int}")]
+        public async Task<IActionResult> GetUserEstimation([FromRoute] int movieId)
+        {
+            var account = (await ParseJwtToken()).Value;
+            var result =  await _estimationService.GetUserEstimation(account.Id, movieId);
+            if (result == null)
+                return NotFound();
+            return Ok(result.Value);
+        }
         
         /// <summary>
         /// Метод для парсинга jwt токена
