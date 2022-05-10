@@ -53,9 +53,36 @@ namespace KFU.CinemaOnline.DAL.Cinema
             return await _context.Genres.ToListAsync();
         }
 
-        public async Task<List<ActorEntity>> GetAllActorEntitiesAsync()
+        public async Task<PagingResult<ActorEntity>> GetAllActorEntitiesAsync(PagingSettings pagingSettings)
         {
-            return await _context.Actors.ToListAsync();
+            if (pagingSettings == null)
+            {
+                var total = await _context.Actors.CountAsync();
+                if (total == 0)
+                {
+                    return PagingResult<ActorEntity>.Empty;
+                }
+
+                var items = await _context.Actors
+                    .Take(PagingSettings.DefaultLimit)
+                    .AsNoTracking()
+                    .ToArrayAsync();
+
+                return new PagingResult<ActorEntity>
+                {
+                    Total = total,
+                    Items = items
+                };
+            }
+
+            var query = _context.Actors.AsQueryable();
+            return await QueryItems(query, new PagingSortSettings()
+            {
+                Limit = pagingSettings.Limit,
+                Offset = pagingSettings.Offset,
+                SortColumn = null,
+                SortOrder = SortOrder.Asc
+            }, null);
         }
 
         public async Task<List<DirectorEntity>> GetAllDirectorEntitiesAsync()

@@ -254,10 +254,17 @@ namespace KFU.CinemaOnline.API.Controllers
         /// Get list of all actors
         /// </summary>
         /// <returns></returns>
-        [HttpGet("actors")]
-        public async Task<List<Actor>> GetAllActorsAsync()
+        [HttpPost("actors")]
+        public async Task<Page<Actor>> GetAllActorsAsync([FromBody] PagingParameters pagingParameters)
         {
-            return _mapper.Map<List<Actor>>(await _cinemaService.GetAllActors());
+            if (pagingParameters.Limit == 0)
+            {
+                pagingParameters.Limit = 10;
+            }
+            
+            var actorList = await _cinemaService.GetAllActors(_mapper.Map<PagingSettings>(pagingParameters));
+
+            return _mapper.Map<Page<Actor>>(actorList);
         }
 
         /// <summary>
@@ -275,7 +282,7 @@ namespace KFU.CinemaOnline.API.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpPost("movies")]
-        public async Task<Page<MovieItem>> GetFilteredMovieListAsync([FromBody, Required] MovieFilterRequest request)
+        public async Task<Page<MovieItem>> GetFilteredMovieListAsync([FromBody] MovieFilterRequest request)
         {
             if (request.Limit == 0)
             {
@@ -414,7 +421,7 @@ namespace KFU.CinemaOnline.API.Controllers
 
             return mappedMovie;
         }
-
+        
         /// <summary>
         /// Получить оценку пользователя к фильму.
         /// </summary>
