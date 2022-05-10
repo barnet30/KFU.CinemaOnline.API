@@ -13,7 +13,7 @@ namespace KFU.CinemaOnline.Core.Cinema
         Task<MovieEntity> CreateMovieEntityAsync(MovieEntity entity);
 
         Task<List<GenreEntity>> GetAllGenreEntitiesAsync();
-        Task<List<ActorEntity>> GetAllActorEntitiesAsync();
+        Task<PagingResult<ActorEntity>> GetAllActorEntitiesAsync(PagingSettings pagingSettings);
         Task<List<DirectorEntity>> GetAllDirectorEntitiesAsync();
         Task<List<MovieEntity>> GetAllMovieEntitiesAsync();
 

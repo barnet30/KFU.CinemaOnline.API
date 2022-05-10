@@ -118,9 +118,9 @@ namespace KFU.CinemaOnline.BL
             return await _cinemaRepository.GetAllGenreEntitiesAsync();
         }
 
-        public async Task<List<ActorEntity>> GetAllActors()
+        public async Task<PagingResult<ActorEntity>> GetAllActors(PagingSettings pagingSettings)
         {
-            return await _cinemaRepository.GetAllActorEntitiesAsync();
+            return await _cinemaRepository.GetAllActorEntitiesAsync(pagingSettings);
         }
 
         public async Task<List<DirectorEntity>> GetAllDirectors()

@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using System;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace KFU.CinemaOnline.Core
 {
@@ -6,5 +7,7 @@ namespace KFU.CinemaOnline.Core
     {
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
+        
+        public DateTime CreatedAt { get; set; }
     }
 }
