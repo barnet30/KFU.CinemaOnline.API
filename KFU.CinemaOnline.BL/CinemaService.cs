@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using AutoMapper;
 using KFU.CinemaOnline.Common;
 using KFU.CinemaOnline.Core.Cinema;
 
@@ -9,10 +10,12 @@ namespace KFU.CinemaOnline.BL
     public class CinemaService : ICinemaService
     {
         private readonly ICinemaRepository _cinemaRepository;
+        private readonly IMapper _mapper;
 
-        public CinemaService(ICinemaRepository cinemaRepository)
+        public CinemaService(ICinemaRepository cinemaRepository, IMapper mapper)
         {
             _cinemaRepository = cinemaRepository;
+            _mapper = mapper;
         }
 
         public async Task<GenreEntity> CreateGenre(GenreEntity entity)
@@ -96,6 +99,7 @@ namespace KFU.CinemaOnline.BL
             {
                 Name = entity.Name,
                 Year = entity.Year,
+                CountryId = entity.CountryId,
                 Country = entity.Country,
                 Description = entity.Description,
                 ImageUrl = entity.ImageUrl,
@@ -118,9 +122,9 @@ namespace KFU.CinemaOnline.BL
             return await _cinemaRepository.GetAllGenreEntitiesAsync();
         }
 
-        public async Task<PagingResult<ActorEntity>> GetAllActors(PagingSettings pagingSettings)
+        public async Task<List<ActorEntity>> GetAllActors()
         {
-            return await _cinemaRepository.GetAllActorEntitiesAsync(pagingSettings);
+            return await _cinemaRepository.GetAllActorEntitiesAsync();
         }
 
         public async Task<List<DirectorEntity>> GetAllDirectors()
@@ -178,23 +182,22 @@ namespace KFU.CinemaOnline.BL
             }
             return await _cinemaRepository.UpdateDirectorEntityAsync(directorEntity);        }
 
-        public async Task<MovieResponseModel> UpdateMovie(MovieUpdateModel updateEntity)
+        public async Task<MovieResponseModel> UpdateMovie(MovieUpdateModel updateModel)
         {
-            var movie = await _cinemaRepository.GetMovieEntityByIdAsync(updateEntity.Id);
-            if (movie == null)
+            var oldMovie = await _cinemaRepository.GetMovieEntityByIdAsync(updateModel.Id);
+            if (oldMovie == null)
             {
                 return new MovieResponseModel
                 {
                     Movie = null,
-                    ErrorMessage = $"Movie with id {updateEntity.Id} not found"
+                    ErrorMessage = $"Movie with id {updateModel.Id} not found"
                 };
             }
-
              
             var updatedGenresList = new List<GenreEntity>();
             var updatedActorsList = new List<ActorEntity>();
 
-            foreach (var genreId in updateEntity.Genres)
+            foreach (var genreId in updateModel.Genres)
             {
                 var genre = await _cinemaRepository.GetGenreEntityByIdAsync(genreId);
                 if (genre == null)
@@ -218,7 +221,7 @@ namespace KFU.CinemaOnline.BL
                 updatedGenresList.Add(genre);
             }
             
-            foreach (var actorId in updateEntity.Actors)
+            foreach (var actorId in updateModel.Actors)
             {
                 var actor = await _cinemaRepository.GetActorEntityByIdAsync(actorId);
                 if (actor == null)
@@ -242,31 +245,27 @@ namespace KFU.CinemaOnline.BL
                 updatedActorsList.Add(actor);
             }
 
-            var newDirector = await _cinemaRepository.GetDirectorEntityByIdAsync(updateEntity.DirectorId);
+            var newDirector = await _cinemaRepository.GetDirectorEntityByIdAsync(updateModel.DirectorId);
             if (newDirector == null)
             {
                 return new MovieResponseModel
                 {
                     Movie = null,
-                    ErrorMessage = $"Director with id {updateEntity.DirectorId} not found"
+                    ErrorMessage = $"Director with id {updateModel.DirectorId} not found"
                 };
             }
 
-            movie = new MovieEntity
-            {
-                Id = updateEntity.Id,
-                Name = updateEntity.Name,
-                Country = updateEntity.Country,
-                Year = updateEntity.Year,
-                Description = updateEntity.Description,
-                ImageUrl = updateEntity.ImageUrl,
-                MovieUrl = updateEntity.MovieUrl,
-                Director = newDirector,
-                Actors = updatedActorsList,
-                Genres = updatedGenresList
-            };
+            var newMovie = _mapper.Map<MovieEntity>(updateModel);
+            newMovie.Estimations = oldMovie.Estimations;
+            newMovie.Rating = oldMovie.Rating;
+            newMovie.EstimationAmount = oldMovie.EstimationAmount;
+            newMovie.CreatedAt = oldMovie.CreatedAt;
+
+            newMovie.Director = newDirector;
+            newMovie.Actors = updatedActorsList;
+            newMovie.Genres = updatedGenresList;
             
-            var updated = await _cinemaRepository.UpdateMovieEntityAsync(movie);
+            var updated = await _cinemaRepository.UpdateMovieEntityAsync(newMovie);
 
             return new MovieResponseModel
             {
