@@ -9,6 +9,7 @@ namespace KFU.CinemaOnline.Core.Cinema
         public string Name { get; set; } // Имя режиссёра
         public string LastName { get; set; } // Фамилия режиссёра
         public string ImageUrl { get; set; } // Ссылка на фотографию режиссёра
+        public int CountryId { get; set; } // Идентификатор страны рождения
         public string Country { get; set; } // Страна рождения
         public DateTime BirthDate { get; set; } // Дата рождения
         public string Description { get; set; } // Описание

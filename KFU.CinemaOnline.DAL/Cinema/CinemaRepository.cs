@@ -22,6 +22,7 @@ namespace KFU.CinemaOnline.DAL.Cinema
 
         public async Task<ActorEntity> CreateActorEntityAsync(ActorEntity entity)
         {
+            entity.CreatedAt = DateTime.Now;
             await _context.Actors.AddAsync(entity);
             await _context.SaveChangesAsync();
             return entity;
@@ -29,6 +30,7 @@ namespace KFU.CinemaOnline.DAL.Cinema
 
         public async Task<DirectorEntity> CreateDirectorEntityAsync(DirectorEntity entity)
         {
+            entity.CreatedAt = DateTime.Now;
             await _context.Directors.AddAsync(entity);
             await _context.SaveChangesAsync();
             return entity;
@@ -36,6 +38,7 @@ namespace KFU.CinemaOnline.DAL.Cinema
 
         public async Task<GenreEntity> CreateGenreEntityAsync(GenreEntity entity)
         {
+            entity.CreatedAt = DateTime.Now;
             await _context.Genres.AddAsync(entity);
             await _context.SaveChangesAsync();
             return entity;
@@ -43,6 +46,7 @@ namespace KFU.CinemaOnline.DAL.Cinema
 
         public async Task<MovieEntity> CreateMovieEntityAsync(MovieEntity entity)
         {
+            entity.CreatedAt = DateTime.Now;
             await _context.Movies.AddAsync(entity);
             await _context.SaveChangesAsync();
             return entity;
@@ -53,36 +57,9 @@ namespace KFU.CinemaOnline.DAL.Cinema
             return await _context.Genres.ToListAsync();
         }
 
-        public async Task<PagingResult<ActorEntity>> GetAllActorEntitiesAsync(PagingSettings pagingSettings)
+        public async Task<List<ActorEntity>> GetAllActorEntitiesAsync()
         {
-            if (pagingSettings == null)
-            {
-                var total = await _context.Actors.CountAsync();
-                if (total == 0)
-                {
-                    return PagingResult<ActorEntity>.Empty;
-                }
-
-                var items = await _context.Actors
-                    .Take(PagingSettings.DefaultLimit)
-                    .AsNoTracking()
-                    .ToArrayAsync();
-
-                return new PagingResult<ActorEntity>
-                {
-                    Total = total,
-                    Items = items
-                };
-            }
-
-            var query = _context.Actors.AsQueryable();
-            return await QueryItems(query, new PagingSortSettings()
-            {
-                Limit = pagingSettings.Limit,
-                Offset = pagingSettings.Offset,
-                SortColumn = null,
-                SortOrder = SortOrder.Asc
-            }, null);
+            return await _context.Actors.ToListAsync();
         }
 
         public async Task<List<DirectorEntity>> GetAllDirectorEntitiesAsync()
@@ -125,6 +102,7 @@ namespace KFU.CinemaOnline.DAL.Cinema
                 .Include(x=>x.Genres)
                 .Include(x=>x.Actors)
                 .Include(x=>x.Director)
+                .Include(x=>x.Estimations)
                 .FirstOrDefaultAsync(x=>x.Id == id);
         }
 
@@ -229,7 +207,7 @@ namespace KFU.CinemaOnline.DAL.Cinema
 
             predicate
                 .And(filterSettings.CountryId, x => x.CountryId == filterSettings.CountryId)
-                .And(filterSettings.Name, x => x.Name.Contains(filterSettings.Name))
+                .And(filterSettings.Name, x => x.Name.ToLower().Contains(filterSettings.Name.ToLower()))
                 .And(filterSettings.YearTo, x => x.Year <= filterSettings.YearTo)
                 .And(filterSettings.YearFrom, x => x.Year >= filterSettings.YearFrom)
                 .And(filterSettings.Genres, x => x.Genres.Any(genre => filterSettings.Genres.Contains(genre.Id)));
@@ -266,7 +244,7 @@ namespace KFU.CinemaOnline.DAL.Cinema
                 };
             
             var items = await ApplySortSettings(query,pagingSettings,resolveSortColumns)
-                .Skip(pagingSettings.Offset)
+                .Skip(pagingSettings.Offset * pagingSettings.Limit)
                 .Take(pagingSettings.Limit)
                 .AsNoTracking()
                 .ToArrayAsync();
