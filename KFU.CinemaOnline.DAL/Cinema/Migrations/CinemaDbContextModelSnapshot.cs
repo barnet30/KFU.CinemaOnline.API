@@ -62,6 +62,12 @@ namespace KFU.CinemaOnline.DAL.Cinema.Migrations
                     b.Property<string>("Country")
                         .HasColumnType("text");
 
+                    b.Property<int>("CountryId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp without time zone");
+
                     b.Property<string>("Description")
                         .HasColumnType("text");
 
@@ -92,6 +98,12 @@ namespace KFU.CinemaOnline.DAL.Cinema.Migrations
                     b.Property<string>("Country")
                         .HasColumnType("text");
 
+                    b.Property<int>("CountryId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp without time zone");
+
                     b.Property<string>("Description")
                         .HasColumnType("text");
 
@@ -116,6 +128,9 @@ namespace KFU.CinemaOnline.DAL.Cinema.Migrations
                         .HasColumnType("integer")
                         .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp without time zone");
+
                     b.Property<string>("Description")
                         .HasColumnType("text");
 
@@ -134,8 +149,17 @@ namespace KFU.CinemaOnline.DAL.Cinema.Migrations
                         .HasColumnType("integer")
                         .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
+                    b.Property<int>("Category")
+                        .HasColumnType("integer");
+
                     b.Property<string>("Country")
                         .HasColumnType("text");
+
+                    b.Property<int>("CountryId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("Description")
                         .HasColumnType("text");
@@ -175,6 +199,9 @@ namespace KFU.CinemaOnline.DAL.Cinema.Migrations
                         .HasColumnType("integer")
                         .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp without time zone");
+
                     b.Property<int>("Estimation")
                         .HasColumnType("integer");
 
@@ -189,6 +216,21 @@ namespace KFU.CinemaOnline.DAL.Cinema.Migrations
                     b.HasIndex("MovieId");
 
                     b.ToTable("Estimations");
+                });
+
+            modelBuilder.Entity("KFU.CinemaOnline.Core.RefBook.CountryRefEntity", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+
+                    b.Property<string>("Name")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("CountryRefEntities");
                 });
 
             modelBuilder.Entity("ActorEntityMovieEntity", b =>

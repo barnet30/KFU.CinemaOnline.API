@@ -22,6 +22,7 @@ namespace KFU.CinemaOnline.DAL.Cinema
 
         public async Task<ActorEntity> CreateActorEntityAsync(ActorEntity entity)
         {
+            entity.CreatedAt = DateTime.Now;
             await _context.Actors.AddAsync(entity);
             await _context.SaveChangesAsync();
             return entity;
@@ -29,6 +30,7 @@ namespace KFU.CinemaOnline.DAL.Cinema
 
         public async Task<DirectorEntity> CreateDirectorEntityAsync(DirectorEntity entity)
         {
+            entity.CreatedAt = DateTime.Now;
             await _context.Directors.AddAsync(entity);
             await _context.SaveChangesAsync();
             return entity;
@@ -36,6 +38,7 @@ namespace KFU.CinemaOnline.DAL.Cinema
 
         public async Task<GenreEntity> CreateGenreEntityAsync(GenreEntity entity)
         {
+            entity.CreatedAt = DateTime.Now;
             await _context.Genres.AddAsync(entity);
             await _context.SaveChangesAsync();
             return entity;
@@ -43,6 +46,7 @@ namespace KFU.CinemaOnline.DAL.Cinema
 
         public async Task<MovieEntity> CreateMovieEntityAsync(MovieEntity entity)
         {
+            entity.CreatedAt = DateTime.Now;
             await _context.Movies.AddAsync(entity);
             await _context.SaveChangesAsync();
             return entity;
@@ -98,6 +102,7 @@ namespace KFU.CinemaOnline.DAL.Cinema
                 .Include(x=>x.Genres)
                 .Include(x=>x.Actors)
                 .Include(x=>x.Director)
+                .Include(x=>x.Estimations)
                 .FirstOrDefaultAsync(x=>x.Id == id);
         }
 
@@ -171,17 +176,18 @@ namespace KFU.CinemaOnline.DAL.Cinema
             _context.Movies.Remove(entity);
             await _context.SaveChangesAsync();        }
 
-        public async Task<PagingResult<MovieEntity>> GetQueryMoviesAsync(MovieFilterSettings filterSettings)
+        public async Task<PagingResult<MovieEntity>> GetQueryMoviesAsync(MovieFilterSettings filterSettings, Category category)
         {
             if (filterSettings == null)
             {
-                var total = await _context.Movies.CountAsync();
+                var total = await _context.Movies.Where(x=>x.Category == category).CountAsync();
                 if (total == 0)
                 {
                     return PagingResult<MovieEntity>.Empty;
                 }
 
                 var items = await _context.Movies
+                    .Where(x=>x.Category == category)
                     .Take(PagingSettings.DefaultLimit)
                     .AsNoTracking()
                     .ToArrayAsync();
@@ -194,6 +200,7 @@ namespace KFU.CinemaOnline.DAL.Cinema
             }
 
             var table = _context.Movies
+                .Where(x=>x.Category == category)
                 .Include(x=>x.Actors)
                 .Include(x=>x.Genres)
                 .Include(x=>x.Director)
@@ -201,14 +208,14 @@ namespace KFU.CinemaOnline.DAL.Cinema
             var predicate = PredicateBuilder.New<MovieEntity>(true);
 
             predicate
-                .And(filterSettings.Country, x => x.Country.Contains(filterSettings.Country))
-                .And(filterSettings.Name, x => x.Name.Contains(filterSettings.Name))
-                .And(filterSettings.YearMax, x => x.Year <= filterSettings.YearMax)
-                .And(filterSettings.YearMin, x => x.Year >= filterSettings.YearMin);
-
+                .And(filterSettings.CountryId, x => x.CountryId == filterSettings.CountryId)
+                .And(filterSettings.Name, x => x.Name.ToLower().Contains(filterSettings.Name.ToLower()))
+                .And(filterSettings.YearTo, x => x.Year <= filterSettings.YearTo)
+                .And(filterSettings.YearFrom, x => x.Year >= filterSettings.YearFrom)
+                .And(filterSettings.Genres, x => x.Genres.Any(genre => filterSettings.Genres.Contains(genre.Id)));
             var query = table.Where(predicate);
 
-            var sortColumns = ResolveMovieSortColumn(filterSettings.SortColumn);
+            var sortColumns = filterSettings.SortColumn != null ? ResolveMovieSortColumn(filterSettings.SortColumn) : null;
 
          return await QueryItems(query, filterSettings, sortColumns);
         }
@@ -217,9 +224,11 @@ namespace KFU.CinemaOnline.DAL.Cinema
             sortColumn.ToLowerInvariant() switch
             {
                 "year" => x => x.Year,
-                "Name" => x => x.Name,
+                "name" => x => x.Name,
                 "county" => x => x.Country,
-                _ => null
+                "rating" => x => x.Rating,
+                "uploaddate" => x => x.CreatedAt,
+                _ => x => x.CreatedAt
             };
 
         private async Task<PagingResult<TEntity>> QueryItems<TEntity>(IQueryable<TEntity> query,
@@ -238,7 +247,7 @@ namespace KFU.CinemaOnline.DAL.Cinema
                 };
             
             var items = await ApplySortSettings(query,pagingSettings,resolveSortColumns)
-                .Skip(pagingSettings.Offset)
+                .Skip(pagingSettings.Offset * pagingSettings.Limit)
                 .Take(pagingSettings.Limit)
                 .AsNoTracking()
                 .ToArrayAsync();

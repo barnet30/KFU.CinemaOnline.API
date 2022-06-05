@@ -10,6 +10,7 @@ using KFU.CinemaOnline.API.Contracts.Account;
 using KFU.CinemaOnline.Common;
 using KFU.CinemaOnline.Core;
 using KFU.CinemaOnline.Core.Account;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
@@ -25,7 +26,7 @@ namespace KFU.CinemaOnline.API.Controllers
         private readonly IMapper _mapper;
         public AccountController(IOptions<AuthOptions> authOptions, IAccountService accountService, IMapper mapper)
         {
-            this._authOptions = authOptions;
+            _authOptions = authOptions;
             _accountService = accountService;
             _mapper = mapper;
         }
@@ -72,7 +73,43 @@ namespace KFU.CinemaOnline.API.Controllers
             }
             var token = GenerateJwt(newUser);
 
-            return Ok(new { account = newUser, access_token = token });
+            return Ok(new { account = newUser, token = token });
+        }
+
+        [HttpGet("accounts")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> GetAccounts()
+        {
+            var result = await _accountService.GetUsers();
+            return Ok(_mapper.Map<List<Account>>(result));
+        }
+
+        [HttpGet("{id:int}")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> GetAccountById([FromRoute] int id)
+        {
+            var user = await _accountService.GetUserById(id);
+            if (user == null)
+            {
+                return NotFound();
+            }
+            return Ok(_mapper.Map<Account>(user));
+        }
+
+        [HttpPatch("{id:int}/roles")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> UpdateRoles([FromRoute] int id, [FromBody] Role[] roles)
+        {
+            var result = await _accountService.UpdateRoles(id, roles);
+            if (result == null)
+                return NotFound();
+            return Ok();
+        }
+
+        [HttpDelete("{id:int}")]
+        public async Task RemoveAccount([FromRoute] int id)
+        {
+            await _accountService.RemoveAccount(id);
         }
 
         private string GenerateJwt(Account account)
@@ -85,11 +122,11 @@ namespace KFU.CinemaOnline.API.Controllers
             var claims = new List<Claim>()
             {
                 new Claim("email", account.Email),
-                new Claim("username", account.Username)
+                new Claim("username", account.Username),
+                new Claim("id", account.Id.ToString())
             };
             
             claims.AddRange(account.Roles.Select(role => new Claim("role", role.ToString())));
-            claims.Add(new Claim("id", account.Id.ToString()));
             
             var token = new JwtSecurityToken(
                 authParams.Issuer,

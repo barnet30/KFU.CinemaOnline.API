@@ -26,6 +26,7 @@ namespace KFU.CinemaOnline.Core.Sql
 
         public async Task<T> CreateAsync(T entity)
         {
+            entity.CreatedAt = DateTime.Now;
             await _context.Set<T>().AddAsync(entity);
 
             await _context.SaveChangesAsync().ConfigureAwait(false);

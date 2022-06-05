@@ -2,6 +2,7 @@
 using KFU.CinemaOnline.Core.Account;
 using KFU.CinemaOnline.Core.Cinema;
 using KFU.CinemaOnline.Core.Estimation;
+using KFU.CinemaOnline.Core.RefBook;
 
 namespace KFU.CinemaOnline.BL
 {
@@ -12,6 +13,7 @@ namespace KFU.CinemaOnline.BL
             builder.RegisterType<AccountService>().As<IAccountService>().InstancePerLifetimeScope();
             builder.RegisterType<CinemaService>().As<ICinemaService>().InstancePerLifetimeScope();
             builder.RegisterType<EstimationService>().As<IEstimationService>().InstancePerLifetimeScope();
+            builder.RegisterType<RefBookService>().As<IRefBookService>().InstancePerLifetimeScope();
         }
     }
 }

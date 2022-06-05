@@ -1,5 +1,4 @@
-﻿
-namespace KFU.CinemaOnline.Core.Account
+﻿namespace KFU.CinemaOnline.Core.Account
 {
     public class AccountEntity : BaseEntity
     {

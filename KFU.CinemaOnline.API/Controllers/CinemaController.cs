@@ -41,108 +41,11 @@ namespace KFU.CinemaOnline.API.Controllers
         /// </summary>
         /// <param name="genre"></param>
         [HttpPost("genre")]
-        //[Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin")]
         public async Task<Genre> CreateGenreAsync([FromBody] GenreCreate genre)
         {
             var result = await _cinemaService.CreateGenre(_mapper.Map<GenreEntity>(genre));
             return _mapper.Map<Genre>(result);
-        }
-
-        /// <summary>
-        /// Add new actor
-        /// </summary>
-        /// <param name="newActor"></param>
-        [HttpPost("actor")]
-        public async Task<Actor> CreateActorAsync([FromBody] ActorCreate newActor)
-        {
-            var result = await _cinemaService.CreateActor(_mapper.Map<ActorEntity>(newActor));
-            return _mapper.Map<Actor>(result);
-        }
-
-        /// <summary>
-        /// Add new Director (режиссёр)
-        /// </summary>
-        /// <param name="newDirector"></param>
-        [HttpPost("director")]
-        public async Task<Director> CreateDirectorAsync([FromBody] DirectorCreate newDirector)
-        {
-            var result = await _cinemaService.CreateDirector(_mapper.Map<DirectorEntity>(newDirector));
-            return _mapper.Map<Director>(result);
-        }
-        
-        /// <summary>
-        /// Add new movie
-        /// </summary>
-        /// <param name="newMovie"></param>
-        [HttpPost("movie")]
-        public async Task<ActionResult<Movie>> CreateMovieAsync([FromBody] MovieCreate newMovie)
-        {
-            var result = await _cinemaService.CreateMovie(_mapper.Map<MovieCreateModel>(newMovie));
-
-            if (result.Movie == null)
-            {
-                return BadRequest(ErrorResponse.GenerateError(HttpStatusCode.BadRequest, result.ErrorMessage));
-            }
-            
-            return _mapper.Map<Movie>(result.Movie);
-        }
-        
-        /// <summary>
-        /// Get movie by <paramref name="id"/>
-        /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
-        [HttpGet("movie/{id:int}")]
-        [ProducesResponseType(typeof(ErrorModel), (int) HttpStatusCode.NotFound)]
-        //public async Task<ActionResult<Movie>> GetMovieByIdAsync([FromRoute]int id)
-        public async Task<ActionResult<Movie>> GetMovieByIdAsync([FromRoute]int id)
-        {
-            var movie = await _cinemaService.GetMovieById(id);
-
-            if (movie == null)
-            {
-                return NotFound(ErrorResponse.GenerateError(HttpStatusCode.NotFound, 
-                    $"Movie with id {id} not found"));
-            }
-
-            return _mapper.Map<Movie>(movie);
-        }
-
-        /// <summary>
-        /// Get actor by <paramref name="id"/>
-        /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
-        [HttpGet("actor/{id:int}")]
-        public async Task<ActionResult<Actor>> GetActorByIdAsync([FromRoute] int id)
-        {
-            var actor = await _cinemaService.GetActorById(id);
-            
-            if (actor == null)
-            {
-                return NotFound(ErrorResponse.GenerateError(HttpStatusCode.NotFound, $"Actor with id {id} not found"));
-            }
-
-            return _mapper.Map<Actor>(actor);
-        }
-
-        /// <summary>
-        /// Get director by <paramref name="id"/>
-        /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
-        [HttpGet("director/{id:int}")]
-        public async Task<ActionResult<Director>> GetDirectorByIdAsync([FromRoute] int id)
-        {
-            var director = await _cinemaService.GetDirectorById(id);
-
-            if (director == null)
-            {
-                return NotFound(
-                    ErrorResponse.GenerateError(HttpStatusCode.NotFound, $"Director with id {id} not found"));
-            }
-
-            return _mapper.Map<Director>(director);
         }
         
         /// <summary>
@@ -165,195 +68,11 @@ namespace KFU.CinemaOnline.API.Controllers
         }
         
         /// <summary>
-        /// Update actor 
-        /// </summary>
-        /// <param name="newActor"></param>
-        /// <returns></returns>
-        [HttpPut("actor")]
-        public async Task<ActionResult<Actor>> UpdateActorAsync([FromBody] Actor newActor)
-        {
-            var updated = await _cinemaService.UpdateActor(_mapper.Map<ActorEntity>(newActor));
-            if (updated == null)
-            {
-                return NotFound(ErrorResponse.GenerateError(HttpStatusCode.NotFound,
-                    $"Actor with id {newActor.Id} not found"));
-            }
-
-            return _mapper.Map<Actor>(updated);
-        }
-        
-        /// <summary>
-        /// Update director
-        /// </summary>
-        /// <param name="newDirector"></param>
-        /// <returns></returns>
-        [HttpPut("director")]
-        public async Task<ActionResult<Director>> UpdateDirectorAsync([FromBody] Director newDirector)
-        {
-            var updated = await _cinemaService.UpdateDirector(_mapper.Map<DirectorEntity>(newDirector));
-            if (updated == null)
-            {
-                return NotFound(ErrorResponse.GenerateError(HttpStatusCode.NotFound,
-                    $"Director with id {newDirector.Id} not found"));
-            }
-
-            return _mapper.Map<Director>(updated);
-        }
-        
-        /// <summary>
-        /// Update genre
-        /// </summary>
-        /// <param name="newGenre"></param>
-        /// <returns></returns>
-        [HttpPut("genre")]
-        public async Task<ActionResult<Genre>> UpdateGenreAsync([FromBody] Genre newGenre)
-        {
-            var updated = await _cinemaService.UpdateGenre(_mapper.Map<GenreEntity>(newGenre));
-            if (updated == null)
-            {
-                return NotFound(ErrorResponse.GenerateError(HttpStatusCode.NotFound,
-                    $"Genre with id {newGenre.Id} not found"));
-            }
-
-            return _mapper.Map<Genre>(updated);
-        }
-        
-        /// <summary>
-        /// Update movie
-        /// </summary>
-        /// <param name="newMovie"></param>
-        /// <returns></returns>
-        [HttpPut("movie")]
-        public async Task<ActionResult<Movie>> UpdateMovieAsync([FromBody] MovieUpdate newMovie)
-        {
-            var movie = await _cinemaService.GetMovieById(newMovie.Id);
-            if (movie == null)
-            {
-                return NotFound(ErrorResponse.GenerateError(HttpStatusCode.NotFound,
-                    $"Movie with id {newMovie.Id} not found"));
-            }
-
-             
-            var updatedGenresList = new List<GenreEntity>();
-            var updatedActorsList = new List<ActorEntity>();
-
-            foreach (var genreId in newMovie.Genres)
-            {
-                var genre = await _cinemaService.GetGenreById(genreId);
-                if (genre == null)
-                {
-                    return NotFound(ErrorResponse.GenerateError(HttpStatusCode.NotFound,
-                        $"Genre with id {genreId} not found"));
-                }
-
-                if (updatedGenresList.Contains(genre))
-                {
-                    return BadRequest(ErrorResponse.GenerateError(HttpStatusCode.BadRequest,
-                        $"Genre {genre.Name} already added"));
-                }
-
-                updatedGenresList.Add(genre);
-            }
-            
-            foreach (var actorId in newMovie.Actors)
-            {
-                var actor = await _cinemaService.GetActorById(actorId);
-                if (actor == null)
-                {
-                    return NotFound(ErrorResponse.GenerateError(HttpStatusCode.NotFound,
-                        $"Actor with id {actorId} not found"));
-                }
-
-                if (updatedActorsList.Contains(actor))
-                {
-                    return BadRequest(ErrorResponse.GenerateError(HttpStatusCode.BadRequest,
-                        $"Actor {actor.Name} already added"));
-                }
-
-                updatedActorsList.Add(actor);
-            }
-
-            var newDirector = await _cinemaService.GetDirectorById(newMovie.DirectorId);
-            if (newDirector == null)
-            {
-                return NotFound(ErrorResponse.GenerateError(HttpStatusCode.NotFound,
-                    $"Director with id {newMovie.DirectorId} not found"));
-            }
-
-            movie = new MovieEntity
-            {
-                Id = newMovie.Id,
-                Name = newMovie.Name,
-                Country = newMovie.Country,
-                Year = newMovie.Year,
-                Description = newMovie.Description,
-                ImageUrl = newMovie.ImageUrl,
-                MovieUrl = newMovie.MovieUrl,
-                Director = newDirector,
-                Actors = updatedActorsList,
-                Genres = updatedGenresList
-            };
-            
-            var updated = await _cinemaService.UpdateMovie(movie);
-            
-            return _mapper.Map<Movie>(updated);
-        }
-
-        /// <summary>
-        /// Get list of all genres
-        /// </summary>
-        /// <returns></returns>
-        [HttpGet("genres")]
-        public async Task<List<Genre>> GetAllGenresAsync()
-        {
-            return _mapper.Map<List<Genre>>(await _cinemaService.GetAllGenres());
-        }
-
-        /// <summary>
-        /// Get list of all actors
-        /// </summary>
-        /// <returns></returns>
-        [HttpGet("actors")]
-        public async Task<List<Actor>> GetAllActorsAsync()
-        {
-            return _mapper.Map<List<Actor>>(await _cinemaService.GetAllActors());
-        }
-
-        /// <summary>
-        /// Get list of all directors
-        /// </summary>
-        /// <returns></returns>
-        [HttpGet("directors")]
-        public async Task<List<Director>> GetAllDirectorsAsync()
-        {
-            return _mapper.Map<List<Director>>(await _cinemaService.GetAllDirectors());
-        }
-        
-        /// <summary>
-        /// Get list of all movies
-        /// </summary>
-        /// <returns></returns>
-        [HttpPost("movies")]
-        public async Task<Page<Movie>> GetFilteredMovieListAsync([FromBody, Required] MovieFilterRequest request)
-        {
-            if (request.Limit == 0)
-            {
-                request.Limit = 10;
-            }
-
-            // TODO добаить фильтр по жанрам
-            
-            var movieList = await _cinemaService
-                .GetFilteredMovies(_mapper.Map<MovieFilterSettings>(request));
-            
-            return _mapper.Map<Page<Movie>>(movieList);
-        }
-
-        /// <summary>
         /// Delete genre by <paramref name="id"/>
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
+        [Authorize(Roles = "Admin")]
         [HttpDelete("genre/{id:int}")]
         public async Task<IActionResult> DeleteGenreByIdAsync([FromRoute]int id)
         {
@@ -373,12 +92,72 @@ namespace KFU.CinemaOnline.API.Controllers
 
             return Ok();
         }
+
+        /// <summary>
+        /// Update genre
+        /// </summary>
+        /// <param name="newGenre"></param>
+        /// <returns></returns>
+        [Authorize(Roles = "Admin")]
+        [HttpPut("genre")]
+        public async Task<ActionResult<Genre>> UpdateGenreAsync([FromBody] Genre newGenre)
+        {
+            var updated = await _cinemaService.UpdateGenre(_mapper.Map<GenreEntity>(newGenre));
+            if (updated == null)
+            {
+                return NotFound(ErrorResponse.GenerateError(HttpStatusCode.NotFound,
+                    $"Genre with id {newGenre.Id} not found"));
+            }
+
+            return _mapper.Map<Genre>(updated);
+        }
+        
+        /// <summary>
+        /// Get list of all genres
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("genres")]
+        public async Task<List<Genre>> GetAllGenresAsync()
+        {
+            return _mapper.Map<List<Genre>>(await _cinemaService.GetAllGenres());
+        }
+
+        /// <summary>
+        /// Add new actor
+        /// </summary>
+        /// <param name="newActor"></param>
+        [Authorize(Roles = "Admin")]
+        [HttpPost("actor")]
+        public async Task<Actor> CreateActorAsync([FromBody] ActorCreate newActor)
+        {
+            var result = await _cinemaService.CreateActor(_mapper.Map<ActorEntity>(newActor));
+            return _mapper.Map<Actor>(result);
+        }
+        
+        /// <summary>
+        /// Get actor by <paramref name="id"/>
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpGet("actor/{id:int}")]
+        public async Task<ActionResult<Actor>> GetActorByIdAsync([FromRoute] int id)
+        {
+            var actor = await _cinemaService.GetActorById(id);
+            
+            if (actor == null)
+            {
+                return NotFound(ErrorResponse.GenerateError(HttpStatusCode.NotFound, $"Actor with id {id} not found"));
+            }
+
+            return _mapper.Map<Actor>(actor);
+        }
         
         /// <summary>
         /// Delete actor by <paramref name="id"/>
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
+        [Authorize(Roles = "Admin")]
         [HttpDelete("actor/{id:int}")]
         public async Task<IActionResult> DeleteActorByIdAsync([FromRoute]int id)
         {
@@ -400,10 +179,72 @@ namespace KFU.CinemaOnline.API.Controllers
         }
         
         /// <summary>
+        /// Update actor 
+        /// </summary>
+        /// <param name="newActor"></param>
+        /// <returns></returns>
+        [Authorize(Roles = "Admin")]
+        [HttpPut("actor")]
+        public async Task<ActionResult<Actor>> UpdateActorAsync([FromBody] Actor newActor)
+        {
+            var updated = await _cinemaService.UpdateActor(_mapper.Map<ActorEntity>(newActor));
+            if (updated == null)
+            {
+                return NotFound(ErrorResponse.GenerateError(HttpStatusCode.NotFound,
+                    $"Actor with id {newActor.Id} not found"));
+            }
+
+            return _mapper.Map<Actor>(updated);
+        }
+        
+        /// <summary>
+        /// Get list of all actors
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("actors")]
+        public async Task<List<Actor>> GetAllActorsAsync()
+        {
+            var actorList = await _cinemaService.GetAllActors();
+            return _mapper.Map<List<Actor>>(actorList);
+        }
+
+        /// <summary>
+        /// Add new Director (режиссёр)
+        /// </summary>
+        /// <param name="newDirector"></param>
+        [Authorize(Roles = "Admin")]
+        [HttpPost("director")]
+        public async Task<Director> CreateDirectorAsync([FromBody] DirectorCreate newDirector)
+        {
+            var result = await _cinemaService.CreateDirector(_mapper.Map<DirectorEntity>(newDirector));
+            return _mapper.Map<Director>(result);
+        }
+        
+        /// <summary>
+        /// Get director by <paramref name="id"/>
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpGet("director/{id:int}")]
+        public async Task<ActionResult<Director>> GetDirectorByIdAsync([FromRoute] int id)
+        {
+            var director = await _cinemaService.GetDirectorById(id);
+
+            if (director == null)
+            {
+                return NotFound(
+                    ErrorResponse.GenerateError(HttpStatusCode.NotFound, $"Director with id {id} not found"));
+            }
+
+            return _mapper.Map<Director>(director);
+        }
+        
+        /// <summary>
         /// Delete director by <paramref name="id"/>
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
+        [Authorize(Roles = "Admin")]
         [HttpDelete("director/{id:int}")]
         public async Task<IActionResult> DeleteDirectorByIdAsync([FromRoute]int id)
         {
@@ -425,10 +266,77 @@ namespace KFU.CinemaOnline.API.Controllers
         }
         
         /// <summary>
+        /// Update director
+        /// </summary>
+        /// <param name="newDirector"></param>
+        /// <returns></returns>
+        [Authorize(Roles = "Admin")]
+        [HttpPut("director")]
+        public async Task<ActionResult<Director>> UpdateDirectorAsync([FromBody] Director newDirector)
+        {
+            var updated = await _cinemaService.UpdateDirector(_mapper.Map<DirectorEntity>(newDirector));
+            if (updated == null)
+            {
+                return NotFound(ErrorResponse.GenerateError(HttpStatusCode.NotFound,
+                    $"Director with id {newDirector.Id} not found"));
+            }
+
+            return _mapper.Map<Director>(updated);
+        }
+        
+        /// <summary>
+        /// Get list of all directors
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("directors")]
+        public async Task<List<Director>> GetAllDirectorsAsync()
+        {
+            return _mapper.Map<List<Director>>(await _cinemaService.GetAllDirectors());
+        }
+        
+        /// <summary>
+        /// Add new movie
+        /// </summary>
+        /// <param name="newMovie"></param>
+        [Authorize(Roles = "Admin")]
+        [HttpPost("movie")]
+        public async Task<ActionResult<Movie>> CreateMovieAsync([FromBody] MovieCreate newMovie)
+        {
+            var result = await _cinemaService.CreateMovie(_mapper.Map<MovieCreateModel>(newMovie));
+
+            if (result.Movie == null)
+            {
+                return BadRequest(ErrorResponse.GenerateError(HttpStatusCode.BadRequest, result.ErrorMessage));
+            }
+            
+            return _mapper.Map<Movie>(result.Movie);
+        }
+        
+        /// <summary>
+        /// Get movie by <paramref name="id"/>
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpGet("movie/{id:int}")]
+        public async Task<ActionResult<Movie>> GetMovieByIdAsync([FromRoute]int id)
+        {
+            var movie = await _cinemaService.GetMovieById(id);
+
+            if (movie == null)
+            {
+                return NotFound(ErrorResponse.GenerateError(HttpStatusCode.NotFound, 
+                    $"Movie with id {id} not found"));
+            }
+
+            return _mapper.Map<Movie>(movie);
+        }
+        
+        /// <summary>
         /// Delete movie by <paramref name="id"/>
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
+        [Authorize(Roles = "Admin")]
         [HttpDelete("movie/{id:int}")]
         public async Task<IActionResult> DeleteMovieByIdAsync([FromRoute]int id)
         {
@@ -448,7 +356,60 @@ namespace KFU.CinemaOnline.API.Controllers
 
             return Ok();
         }
+        
+        /// <summary>
+        /// Update movie
+        /// </summary>
+        /// <param name="newMovie"></param>
+        /// <returns></returns>
+        [Authorize(Roles = "Admin")]
+        [HttpPut("movie")]
+        public async Task<ActionResult<Movie>> UpdateMovieAsync([FromBody] MovieUpdate newMovie)
+        {
+            var updatedMovie = await _cinemaService.UpdateMovie(_mapper.Map<MovieUpdateModel>(newMovie));
+            if (updatedMovie.Movie == null)
+            {
+                return BadRequest(ErrorResponse.GenerateError(HttpStatusCode.BadRequest, updatedMovie.ErrorMessage));
+            }
 
+            return _mapper.Map<Movie>(updatedMovie.Movie);
+        }
+        
+        /// <summary>
+        /// Get list of all movies
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost("movies")]
+        public async Task<Page<MovieItem>> GetFilteredMovieListAsync([FromBody] MovieFilterRequest request)
+        {
+            if (request.Limit == 0)
+            {
+                request.Limit = 10;
+            }
+            
+            var movieList = await _cinemaService
+                .GetFilteredMovies(_mapper.Map<MovieFilterSettings>(request), Category.Movie);
+            
+            return _mapper.Map<Page<MovieItem>>(movieList);
+        }
+        
+        /// <summary>
+        /// Get list of all cartoons
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost("cartoons")]
+        public async Task<Page<MovieItem>> GetFilteredCartoonListAsync([FromBody] MovieFilterRequest request)
+        {
+            if (request.Limit == 0)
+            {
+                request.Limit = 10;
+            }
+            
+            var movieList = await _cinemaService
+                .GetFilteredMovies(_mapper.Map<MovieFilterSettings>(request), Category.Cartoon);
+            
+            return _mapper.Map<Page<MovieItem>>(movieList);
+        }
         /// <summary>
         /// Update movie rating
         /// </summary>
@@ -470,6 +431,21 @@ namespace KFU.CinemaOnline.API.Controllers
             var mappedMovie = _mapper.Map<Movie>(movie.Movie);
 
             return mappedMovie;
+        }
+        
+        /// <summary>
+        /// Получить оценку пользователя к фильму.
+        /// </summary>
+        /// <param name="movieId">Идентификатор фильма.</param>
+        /// <returns></returns>
+        [HttpGet("rate/{movieId:int}")]
+        public async Task<IActionResult> GetUserEstimation([FromRoute] int movieId)
+        {
+            var account = (await ParseJwtToken()).Value;
+            var result =  await _estimationService.GetUserEstimation(account.Id, movieId);
+            if (result == null)
+                return NotFound();
+            return Ok(result.Value);
         }
         
         /// <summary>

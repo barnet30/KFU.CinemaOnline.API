@@ -26,6 +26,9 @@ namespace KFU.CinemaOnline.DAL.Account.Migrations
                         .HasColumnType("integer")
                         .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp without time zone");
+
                     b.Property<string>("Email")
                         .HasColumnType("text");
 

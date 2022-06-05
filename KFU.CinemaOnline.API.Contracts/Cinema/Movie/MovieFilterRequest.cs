@@ -1,13 +1,16 @@
-﻿namespace KFU.CinemaOnline.API.Contracts.Cinema.Movie
+﻿using System.Collections.Generic;
+
+namespace KFU.CinemaOnline.API.Contracts.Cinema.Movie
 {
     /// <summary>
     /// Filter parameters for movie list
     /// </summary>
     public class MovieFilterRequest : PagingSortParameters
     {
-        public int? YearMax { get; set; }
-        public int? YearMin { get; set; }
+        public int? YearTo { get; set; }
+        public int? YearFrom { get; set; }
         public string Name { get; set; }
-        public string Country { get; set; }
+        public int? CountryId { get; set; }
+        public List<int> Genres { get; set; }
     }
 }

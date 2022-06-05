@@ -1,12 +1,14 @@
-﻿using KFU.CinemaOnline.Common;
+﻿using System.Collections.Generic;
+using KFU.CinemaOnline.Common;
 
 namespace KFU.CinemaOnline.Core.Cinema
 {
     public class MovieFilterSettings : PagingSortSettings
     {
-        public int? YearMax { get; set; }
-        public int? YearMin { get; set; }
+        public int? YearTo { get; set; }
+        public int? YearFrom { get; set; }
         public string Name { get; set; }
-        public string Country { get; set; }
+        public int? CountryId { get; set; }
+        public List<int> Genres { get; set; } 
     }
 }
