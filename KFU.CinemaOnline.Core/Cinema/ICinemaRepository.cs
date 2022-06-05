@@ -35,6 +35,6 @@ namespace KFU.CinemaOnline.Core.Cinema
         Task DeleteDirectorEntityByIdAsync(int id);
         Task DeleteMovieEntityByIdAsync(int id);
 
-        Task<PagingResult<MovieEntity>> GetQueryMoviesAsync(MovieFilterSettings filterSettings);
+        Task<PagingResult<MovieEntity>> GetQueryMoviesAsync(MovieFilterSettings filterSettings, Category category);
     }
 }

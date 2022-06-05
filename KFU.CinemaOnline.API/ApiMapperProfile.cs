@@ -43,13 +43,13 @@ namespace KFU.CinemaOnline.API
 
             CreateMap<MovieEntity, Movie>()
                 .ForMember(dst => dst.Rating, opt => 
-                    opt.MapFrom(src => Math.Round(src.Rating, 2)));
+                    opt.MapFrom(src => Math.Round(src.Rating, 1)));
             CreateMap<Movie, MovieEntity>();
             CreateMap<MovieCreate, MovieCreateModel>();
             CreateMap<MovieUpdate, MovieUpdateModel>();
             CreateMap<MovieEntity, MovieItem>()
                 .ForMember(dst => dst.Rating, opt => 
-                    opt.MapFrom(src => Math.Round(src.Rating, 2)));
+                    opt.MapFrom(src => Math.Round(src.Rating, 1)));
 
             CreateMap<PagingParameters, PagingSettings>().ReverseMap();
             CreateMap<PagingSortParameters, PagingSortSettings>().ReverseMap();

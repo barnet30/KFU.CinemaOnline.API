@@ -176,17 +176,18 @@ namespace KFU.CinemaOnline.DAL.Cinema
             _context.Movies.Remove(entity);
             await _context.SaveChangesAsync();        }
 
-        public async Task<PagingResult<MovieEntity>> GetQueryMoviesAsync(MovieFilterSettings filterSettings)
+        public async Task<PagingResult<MovieEntity>> GetQueryMoviesAsync(MovieFilterSettings filterSettings, Category category)
         {
             if (filterSettings == null)
             {
-                var total = await _context.Movies.CountAsync();
+                var total = await _context.Movies.Where(x=>x.Category == category).CountAsync();
                 if (total == 0)
                 {
                     return PagingResult<MovieEntity>.Empty;
                 }
 
                 var items = await _context.Movies
+                    .Where(x=>x.Category == category)
                     .Take(PagingSettings.DefaultLimit)
                     .AsNoTracking()
                     .ToArrayAsync();
@@ -199,6 +200,7 @@ namespace KFU.CinemaOnline.DAL.Cinema
             }
 
             var table = _context.Movies
+                .Where(x=>x.Category == category)
                 .Include(x=>x.Actors)
                 .Include(x=>x.Genres)
                 .Include(x=>x.Director)
@@ -225,7 +227,8 @@ namespace KFU.CinemaOnline.DAL.Cinema
                 "name" => x => x.Name,
                 "county" => x => x.Country,
                 "rating" => x => x.Rating,
-                _ => null
+                "uploaddate" => x => x.CreatedAt,
+                _ => x => x.CreatedAt
             };
 
         private async Task<PagingResult<TEntity>> QueryItems<TEntity>(IQueryable<TEntity> query,

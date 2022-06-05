@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using KFU.CinemaOnline.Common;
 using KFU.CinemaOnline.Core.Estimation;
 
 namespace KFU.CinemaOnline.Core.Cinema
@@ -14,6 +15,7 @@ namespace KFU.CinemaOnline.Core.Cinema
         public string ImageUrl { get; set; } // Ссылка на постер фильма
         public double Rating { get; set; } // Рейтинг (от 0 до 10) фильма
         public int EstimationAmount { get; set; } // Количество оценок фильма
+        public Category Category { get; set; } // Категория
         
         public DirectorEntity Director { get; set; } // Ссылка на режиссёра 
         public List<ActorEntity> Actors { get; set; } // Ссылка на актёров
