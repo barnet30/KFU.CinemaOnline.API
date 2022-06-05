@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using KFU.CinemaOnline.Common;
 
 namespace KFU.CinemaOnline.Core.Cinema
 {
@@ -11,7 +12,8 @@ namespace KFU.CinemaOnline.Core.Cinema
         public string Description { get; set; }
         public string MovieUrl { get; set; }
         public string ImageUrl { get; set; }
-        
+        public Category Category { get; set; }
+
 
         public int DirectorId { get; set; }
         public IEnumerable<int> Actors { get; set; }

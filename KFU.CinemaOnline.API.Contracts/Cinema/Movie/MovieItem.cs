@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using KFU.CinemaOnline.Common;
 
 namespace KFU.CinemaOnline.API.Contracts.Cinema.Movie
 {
@@ -13,6 +14,8 @@ namespace KFU.CinemaOnline.API.Contracts.Cinema.Movie
         public string Description { get; set; }
         public string ImageUrl { get; set; }
         public DateTime CreatedAt { get; set; }
+        public Category Category { get; set; }
+        
         public double Rating { get; set; }
         public int EstimationAmount { get; set; }
 

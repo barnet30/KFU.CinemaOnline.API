@@ -388,11 +388,28 @@ namespace KFU.CinemaOnline.API.Controllers
             }
             
             var movieList = await _cinemaService
-                .GetFilteredMovies(_mapper.Map<MovieFilterSettings>(request));
+                .GetFilteredMovies(_mapper.Map<MovieFilterSettings>(request), Category.Movie);
             
             return _mapper.Map<Page<MovieItem>>(movieList);
         }
         
+        /// <summary>
+        /// Get list of all cartoons
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost("cartoons")]
+        public async Task<Page<MovieItem>> GetFilteredCartoonListAsync([FromBody] MovieFilterRequest request)
+        {
+            if (request.Limit == 0)
+            {
+                request.Limit = 10;
+            }
+            
+            var movieList = await _cinemaService
+                .GetFilteredMovies(_mapper.Map<MovieFilterSettings>(request), Category.Cartoon);
+            
+            return _mapper.Map<Page<MovieItem>>(movieList);
+        }
         /// <summary>
         /// Update movie rating
         /// </summary>
