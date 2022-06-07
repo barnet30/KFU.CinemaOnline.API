@@ -104,6 +104,7 @@ namespace KFU.CinemaOnline.BL
                 Description = entity.Description,
                 ImageUrl = entity.ImageUrl,
                 MovieUrl = entity.MovieUrl,
+                Category = entity.Category,
                 Director = director,
                 Genres = genres,
                 Actors = actors
